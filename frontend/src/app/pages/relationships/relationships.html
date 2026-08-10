@@ -1,0 +1,93 @@
+<div class="container mt-4 relationships-page">
+
+  <h2>Relationships</h2>
+
+  <div class="row g-3">
+
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h4 class="card-title">Assign Skill</h4>
+
+          <label class="form-label">Employee</label>
+          <select class="form-select mb-3" [(ngModel)]="skillEmployeeId">
+            <option value="">Select Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
+
+          <label class="form-label">Skill</label>
+          <select class="form-select mb-3" [(ngModel)]="skillId">
+            <option value="">Select Skill</option>
+            <option *ngFor="let skill of skills" [value]="skill.skillId">
+              {{ skill.skillName }}
+            </option>
+          </select>
+
+          <button class="btn btn-primary mt-auto align-self-start" (click)="assignSkill()">
+            Assign Skill
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h4 class="card-title">Assign Project</h4>
+
+          <label class="form-label">Employee</label>
+          <select class="form-select mb-3" [(ngModel)]="projectEmployeeId">
+            <option value="">Select Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
+
+          <label class="form-label">Project</label>
+          <select class="form-select mb-3" [(ngModel)]="projectId">
+            <option value="">Select Project</option>
+            <option *ngFor="let project of projects" [value]="project.projectId">
+              {{ project.projectName }}
+            </option>
+          </select>
+
+          <button class="btn btn-success mt-auto align-self-start" (click)="assignProject()">
+            Assign Project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h4 class="card-title">Assign Manager</h4>
+
+          <label class="form-label">Employee</label>
+          <select class="form-select mb-3" [(ngModel)]="managerEmployeeId">
+            <option value="">Select Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
+
+          <label class="form-label">Manager</label>
+          <select class="form-select mb-3" [(ngModel)]="managerId">
+            <option value="">Select Manager</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
+
+          <button class="btn btn-warning mt-auto align-self-start" (click)="assignManager()">
+            Assign Manager
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,52 @@
+<nav class="app-navbar" aria-label="Main navigation">
+  <div class="navbar-inner">
+    <a class="brand" routerLink="/" (click)="closeMenu()">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="10" r="3.2" fill="currentColor" />
+          <circle cx="24" cy="8" r="3.2" fill="currentColor" />
+          <circle cx="16" cy="24" r="3.2" fill="currentColor" />
+          <path
+            d="M10.5 12.2 L14.2 21.2 M21.5 10.2 L17.8 21.2 M11.2 10.4 L20.8 8.6"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-title">Skill Graph</span>
+        <span class="brand-sub">Employee skills &amp; projects</span>
+      </span>
+    </a>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="navbar-links"
+      aria-label="Toggle navigation"
+      (click)="toggleMenu()"
+    >
+      <span class="menu-bar" [class.open]="menuOpen()"></span>
+    </button>
+
+    <div
+      id="navbar-links"
+      class="nav-links"
+      [class.open]="menuOpen()"
+    >
+      @for (link of links; track link.path) {
+        <a
+          class="nav-link"
+          [routerLink]="link.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.exact }"
+          (click)="closeMenu()"
+        >
+          {{ link.label }}
+        </a>
+      }
+    </div>
+  </div>
+</nav>

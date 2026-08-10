@@ -1,0 +1,239 @@
+<section class="graph-page">
+  <div class="graph-shell">
+
+    <header class="page-hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Exploration</p>
+        <h1>Relationship map</h1>
+        <p class="lede">
+          See how people connect to skills and projects across your organization.
+        </p>
+      </div>
+
+      <div class="hero-stats" aria-label="Graph metrics">
+        <div class="stat">
+          <span class="stat-value">{{ employeeCount() }}</span>
+          <span class="stat-label">People</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ skillCount() }}</span>
+          <span class="stat-label">Skills</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ projectCount() }}</span>
+          <span class="stat-label">Projects</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ linkCount() }}</span>
+          <span class="stat-label">Links</span>
+        </div>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="state-banner loading" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        Building the skill graph…
+      </div>
+    }
+
+    @if (error(); as err) {
+      <div class="state-banner error" role="alert">
+        <span>{{ err }}</span>
+        <button type="button" class="retry" (click)="loadGraph()">Retry</button>
+      </div>
+    }
+
+    @if (!loading() && !error()) {
+      <div class="workspace">
+        <aside class="controls" aria-label="Graph controls">
+          <label class="search-field">
+            <span class="field-label">Search</span>
+            <input
+              type="search"
+              [ngModel]="search()"
+              (ngModelChange)="onSearchInput($event)"
+              placeholder="Name, skill, or project"
+              autocomplete="off"
+            />
+          </label>
+
+          <div class="filter-block">
+            <p class="field-label">Show layers</p>
+            <div class="filter-list">
+              <button
+                type="button"
+                class="filter-chip employee"
+                [class.active]="showEmployees()"
+                (click)="toggleType('employee')"
+              >
+                <span class="dot"></span>
+                Employees
+              </button>
+              <button
+                type="button"
+                class="filter-chip skill"
+                [class.active]="showSkills()"
+                (click)="toggleType('skill')"
+              >
+                <span class="dot"></span>
+                Skills
+              </button>
+              <button
+                type="button"
+                class="filter-chip project"
+                [class.active]="showProjects()"
+                (click)="toggleType('project')"
+              >
+                <span class="dot"></span>
+                Projects
+              </button>
+            </div>
+          </div>
+
+          <div class="legend">
+            <p class="field-label">Legend</p>
+            <ul>
+              <li><span class="swatch employee"></span> Employee</li>
+              <li><span class="swatch skill"></span> Skill</li>
+              <li><span class="swatch project"></span> Project</li>
+              <li><span class="line skill"></span> Has skill</li>
+              <li><span class="line project"></span> On project</li>
+            </ul>
+          </div>
+
+          <div class="hint">
+            Drag nodes to rearrange. Scroll to zoom. Click empty space and drag to pan.
+          </div>
+
+          <a routerLink="/relationships" class="cta-link">Assign relationships →</a>
+        </aside>
+
+        <div class="stage">
+          <div class="stage-toolbar">
+            <div class="toolbar-left">
+              <button type="button" class="tool-btn" (click)="zoomIn()" title="Zoom in">+</button>
+              <button type="button" class="tool-btn" (click)="zoomOut()" title="Zoom out">−</button>
+              <button type="button" class="tool-btn text" (click)="resetView()">Reset layout</button>
+            </div>
+            <p class="toolbar-hint">{{ visibleNodes().length }} nodes · {{ visibleEdges().length }} edges</p>
+          </div>
+
+          <div
+            #canvasHost
+            class="canvas-host"
+            (wheel)="onWheel($event)"
+            (pointerdown)="onPointerDown($event)"
+            (pointermove)="onPointerMove($event)"
+            (pointerup)="onPointerUp($event)"
+            (pointercancel)="onPointerUp($event)"
+            (click)="clearSelection()"
+          >
+            @if (!nodes().length) {
+              <div class="empty-graph">
+                <h2>No graph data yet</h2>
+                <p>Add employees, skills, and projects, then link them under Relationships.</p>
+                <a routerLink="/relationships" class="btn-primary">Open Relationships</a>
+              </div>
+            } @else {
+              <svg
+                class="graph-svg"
+                [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+                role="img"
+                aria-label="Employee skill and project relationship graph"
+              >
+                <defs>
+                  <radialGradient id="stageGlow" cx="50%" cy="40%" r="65%">
+                    <stop offset="0%" stop-color="rgba(47, 158, 138, 0.16)" />
+                    <stop offset="55%" stop-color="rgba(47, 111, 237, 0.06)" />
+                    <stop offset="100%" stop-color="rgba(15, 39, 68, 0)" />
+                  </radialGradient>
+                  <filter id="nodeShadow" x="-40%" y="-40%" width="180%" height="180%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="rgba(15, 39, 68, 0.28)" />
+                  </filter>
+                </defs>
+
+                <rect width="100%" height="100%" fill="url(#stageGlow)"></rect>
+
+                <g [attr.transform]="'translate(' + transform().x + ' ' + transform().y + ') scale(' + transform().k + ')'">
+                  @for (edge of renderedEdges(); track trackEdge($index, edge)) {
+                    <line
+                      class="edge"
+                      [class.skill]="edge.kind === 'skill'"
+                      [class.project]="edge.kind === 'project'"
+                      [class.active]="isEdgeActive(edge)"
+                      [class.dimmed]="selectedId() && !isEdgeActive(edge)"
+                      [attr.x1]="edge.x1"
+                      [attr.y1]="edge.y1"
+                      [attr.x2]="edge.x2"
+                      [attr.y2]="edge.y2"
+                    />
+                  }
+
+                  @for (node of visibleNodes(); track trackNode($index, node)) {
+                    <g
+                      class="node"
+                      [attr.data-node-id]="node.id"
+                      [class.dimmed]="isDimmed(node.id)"
+                      [class.selected]="selectedId() === node.id"
+                      [attr.transform]="'translate(' + node.x + ' ' + node.y + ')'"
+                      (click)="selectNode(node, $event)"
+                    >
+                      <circle
+                        class="node-ring"
+                        [attr.r]="node.radius + 5"
+                        [attr.fill]="nodeFill(node.type)"
+                      />
+                      <circle
+                        class="node-core"
+                        [attr.r]="node.radius"
+                        [attr.fill]="nodeFill(node.type)"
+                        filter="url(#nodeShadow)"
+                      />
+                      <text class="node-initials" text-anchor="middle" dy="0.35em">
+                        {{ nodeInitials(node.label) }}
+                      </text>
+                      <text class="node-caption" text-anchor="middle" [attr.y]="node.radius + 14">
+                        {{ shortLabel(node.label) }}
+                      </text>
+                    </g>
+                  }
+                </g>
+              </svg>
+            }
+          </div>
+
+          @if (selectedNode(); as node) {
+            <aside class="detail-panel" aria-live="polite">
+              <div class="detail-head">
+                <span class="type-badge" [attr.data-type]="node.type">{{ node.type }}</span>
+                <button type="button" class="close-btn" (click)="clearSelection()" aria-label="Close details">×</button>
+              </div>
+              <h2>{{ node.label }}</h2>
+              @if (node.subtitle) {
+                <p class="detail-sub">{{ node.subtitle }}</p>
+              }
+              <p class="detail-meta">Connected to {{ selectedConnections().length }} nodes</p>
+              <ul class="connection-list">
+                @for (conn of selectedConnections(); track conn.id) {
+                  <li>
+                    <button type="button" (click)="selectNode(conn)">
+                      <span class="mini-dot" [style.background]="nodeFill(conn.type)"></span>
+                      <span class="conn-label">{{ conn.label }}</span>
+                      <span class="conn-type">{{ conn.type }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
+              @if (node.type === 'employee') {
+                <a class="detail-link" [routerLink]="['/employees', node.id.replace('e:', '')]">
+                  Open employee profile →
+                </a>
+              }
+            </aside>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>

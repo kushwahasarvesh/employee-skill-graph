@@ -1,0 +1,75 @@
+<div class="container mt-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="mb-0">Employee Details</h2>
+        <a routerLink="/employees" class="btn btn-secondary btn-sm">Back to Employees</a>
+    </div>
+
+    <div *ngIf="loading()" class="alert alert-info">Loading employee details...</div>
+
+    <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+
+    <ng-container *ngIf="!loading() && !error() && employee() as emp">
+
+        <div class="mb-4">
+            <h4>{{ emp.name }}</h4>
+            <p class="mb-1"><strong>ID:</strong> {{ emp.employeeId }}</p>
+            <p class="mb-1"><strong>Email:</strong> {{ emp.email }}</p>
+            <p class="mb-0"><strong>Designation:</strong> {{ emp.designation }}</p>
+        </div>
+
+        <hr>
+
+        <h4>Assigned Skills</h4>
+
+        <table class="table table-bordered table-striped" *ngIf="skills().length; else noSkills">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let skill of skills()">
+                    <td>{{ skill.skillId }}</td>
+                    <td>{{ skill.skillName }}</td>
+                    <td>{{ skill.description }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ng-template #noSkills>
+            <p class="text-muted">No skills assigned.</p>
+        </ng-template>
+
+        <hr>
+
+        <h4>Assigned Projects</h4>
+
+        <table class="table table-bordered table-striped" *ngIf="projects().length; else noProjects">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Client</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let project of projects()">
+                    <td>{{ project.projectId }}</td>
+                    <td>{{ project.projectName }}</td>
+                    <td>{{ project.clientName }}</td>
+                    <td>{{ project.description }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ng-template #noProjects>
+            <p class="text-muted">No projects assigned.</p>
+        </ng-template>
+
+    </ng-container>
+
+</div>

@@ -1,0 +1,43 @@
+<div class="container mt-4 recommendations-page">
+
+  <h2>Recommendations</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Employee</label>
+      <select class="form-select" [(ngModel)]="employeeId">
+        <option value="">Select Employee</option>
+        <option *ngFor="let emp of employees()" [value]="emp.employeeId">
+          {{ emp.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary mb-4" (click)="findSimilar()" [disabled]="loading()">
+    {{ loading() ? 'Searching...' : 'Find Similar Employees' }}
+  </button>
+
+  <hr>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+
+  <table *ngIf="searched() && !loading() && !error()" class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Skills Match</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="recommendations().length === 0">
+        <td colspan="2">No similar employees found.</td>
+      </tr>
+      <tr *ngFor="let rec of recommendations()">
+        <td>{{ rec.name }}</td>
+        <td>{{ skillsMatch(rec) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

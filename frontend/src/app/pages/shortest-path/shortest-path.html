@@ -1,0 +1,48 @@
+<div class="container mt-4 shortest-path-page">
+
+  <h2>Shortest Reporting Path</h2>
+
+  <div class="row mb-3 g-3">
+    <div class="col-md-4">
+      <label class="form-label">Employee</label>
+      <select class="form-select" [(ngModel)]="emp1">
+        <option value="">Select Employee</option>
+        <option *ngFor="let emp of employees()" [value]="emp.employeeId">
+          {{ emp.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Employee</label>
+      <select class="form-select" [(ngModel)]="emp2">
+        <option value="">Select Employee</option>
+        <option *ngFor="let emp of employees()" [value]="emp.employeeId">
+          {{ emp.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary mb-4" (click)="findPath()" [disabled]="loading()">
+    {{ loading() ? 'Searching...' : 'Find Path' }}
+  </button>
+
+  <hr>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+
+  <div *ngIf="searched() && !loading() && !error()" class="path-result">
+    <div *ngIf="path().length === 0" class="text-muted">
+      No reporting path found between the selected employees.
+    </div>
+
+    <div *ngIf="path().length > 0" class="path-chain">
+      <ng-container *ngFor="let name of path(); let last = last">
+        <div class="path-node">{{ name }}</div>
+        <div *ngIf="!last" class="path-arrow">↓</div>
+      </ng-container>
+    </div>
+  </div>
+
+</div>

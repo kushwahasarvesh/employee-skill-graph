@@ -1,0 +1,228 @@
+<section class="dashboard">
+  <div class="dashboard-shell">
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Overview</p>
+        <h1>Skill Graph</h1>
+        <p class="lede">
+          A live snapshot of your workforce — people, skills, and projects in one place.
+        </p>
+        <div class="hero-actions">
+          <a routerLink="/employees" class="btn-primary">Browse employees</a>
+          <a routerLink="/relationships" class="btn-ghost">Manage relationships</a>
+        </div>
+      </div>
+
+      <div class="hero-panel" aria-hidden="true">
+        <div class="orbit orbit-a"></div>
+        <div class="orbit orbit-b"></div>
+        <div class="node node-a"></div>
+        <div class="node node-b"></div>
+        <div class="node node-c"></div>
+        <svg class="graph-lines" viewBox="0 0 280 220" fill="none">
+          <path d="M70 70 L140 160 M210 55 L140 160 M70 70 L210 55" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="state-banner loading" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        Loading dashboard…
+      </div>
+    }
+
+    @if (error(); as err) {
+      <div class="state-banner error" role="alert">
+        <span>{{ err }}</span>
+        <button type="button" class="retry" (click)="loadDashboard()">Retry</button>
+      </div>
+    }
+
+    @if (!loading() && !error()) {
+      <section class="kpi-row" aria-label="Key metrics">
+        <article class="kpi">
+          <div class="kpi-icon employees" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M16 11a3 3 0 1 0-3-3 3 3 0 0 0 3 3Zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3Zm0 2c-2.67 0-8 1.34-8 4v2h10v-2c0-2.66-5.33-4-8-4Zm8 0c-.29 0-.62.02-.97.05A5.36 5.36 0 0 1 16 17v2h8v-2c0-2.66-5.33-4-8-4Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div>
+            <p class="kpi-label">Employees</p>
+            <p class="kpi-value">{{ employeeCount() }}</p>
+          </div>
+        </article>
+
+        <article class="kpi">
+          <div class="kpi-icon skills" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 2 9.2 8.6 2 9.3l5.4 4.6L5.8 21 12 17.3 18.2 21l-1.6-7.1L22 9.3l-7.2-.7L12 2Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div>
+            <p class="kpi-label">Skills</p>
+            <p class="kpi-value">{{ skillCount() }}</p>
+          </div>
+        </article>
+
+        <article class="kpi">
+          <div class="kpi-icon projects" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div>
+            <p class="kpi-label">Projects</p>
+            <p class="kpi-value">{{ projectCount() }}</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel people-panel">
+          <div class="panel-head">
+            <h2>Recent employees</h2>
+            <a routerLink="/employees" class="panel-link">View all</a>
+          </div>
+
+          @if (recentEmployees().length === 0) {
+            <p class="empty">No employees yet. Add your first person to get started.</p>
+          } @else {
+            <ul class="people-list">
+              @for (employee of recentEmployees(); track employee.employeeId) {
+                <li>
+                  <a class="person" [routerLink]="['/employees', employee.employeeId]">
+                    <span class="avatar">{{ initials(employee.name) }}</span>
+                    <span class="person-meta">
+                      <span class="person-name">{{ employee.name }}</span>
+                      <span class="person-role">{{ employee.designation }}</span>
+                    </span>
+                    <span class="person-id">{{ employee.employeeId }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="panel roles-panel">
+          <div class="panel-head">
+            <h2>By designation</h2>
+          </div>
+
+          @if (designationStats().length === 0) {
+            <p class="empty">Designation mix will appear once employees are added.</p>
+          } @else {
+            <ul class="role-list">
+              @for (stat of designationStats(); track stat.label) {
+                <li>
+                  <div class="role-row">
+                    <span class="role-name">{{ stat.label }}</span>
+                    <span class="role-count">{{ stat.count }}</span>
+                  </div>
+                  <div class="bar-track" aria-hidden="true">
+                    <div class="bar-fill" [style.width.%]="stat.percent"></div>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </section>
+
+      <section class="split-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Skills catalog</h2>
+            <a routerLink="/skills" class="panel-link">Manage</a>
+          </div>
+
+          @if (recentSkills().length === 0) {
+            <p class="empty">No skills defined yet.</p>
+          } @else {
+            <div class="chip-wrap">
+              @for (skill of recentSkills(); track skill.skillId) {
+                <span class="chip">{{ skill.skillName }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Active projects</h2>
+            <a routerLink="/projects" class="panel-link">Manage</a>
+          </div>
+
+          @if (recentProjects().length === 0) {
+            <p class="empty">No projects yet.</p>
+          } @else {
+            <ul class="project-list">
+              @for (project of recentProjects(); track project.projectId) {
+                <li>
+                  <span class="project-name">{{ project.projectName }}</span>
+                  <span class="project-client">{{ project.clientName }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </section>
+
+      <section class="relationships-section" aria-label="Relationships">
+        <div class="panel relationships-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Relationships</h2>
+              <p class="panel-sub">Connect people with skills, projects, and managers.</p>
+            </div>
+            <a routerLink="/relationships" class="panel-link">Open Relationships</a>
+          </div>
+
+          <div class="relationship-grid">
+            @for (action of relationshipActions; track action.title) {
+              <a
+                class="relationship-card"
+                [class.blue]="action.accent === 'blue'"
+                [class.coral]="action.accent === 'coral'"
+                [class.amber]="action.accent === 'amber'"
+                routerLink="/relationships"
+              >
+                <span class="relationship-title">{{ action.title }}</span>
+                <span class="relationship-desc">{{ action.description }}</span>
+                <span class="relationship-cta">Go to assign →</span>
+              </a>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="quick-section" aria-label="Quick navigation">
+        <div class="panel-head section-head">
+          <h2>Quick actions</h2>
+          <p>Jump into the workflows you use most.</p>
+        </div>
+
+        <div class="quick-grid">
+          @for (link of quickLinks; track link.path) {
+            <a
+              class="quick-card"
+              [class.teal]="link.accent === 'teal'"
+              [class.blue]="link.accent === 'blue'"
+              [class.coral]="link.accent === 'coral'"
+              [class.indigo]="link.accent === 'indigo'"
+              [class.mint]="link.accent === 'mint'"
+              [class.amber]="link.accent === 'amber'"
+              [routerLink]="link.path"
+            >
+              <span class="quick-label">{{ link.label }}</span>
+              <span class="quick-desc">{{ link.description }}</span>
+            </a>
+          }
+        </div>
+      </section>
+    }
+
+  </div>
+</section>

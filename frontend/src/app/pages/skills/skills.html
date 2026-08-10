@@ -1,0 +1,98 @@
+<div class="container mt-4">
+
+    <h2>Skills</h2>
+
+    <form [formGroup]="skillForm" (ngSubmit)="saveSkill()">
+
+        <div class="row">
+
+            <div class="col-md-4">
+
+                <input class="form-control" placeholder="Skill Id" formControlName="skillId"
+                    [attr.readonly]="editMode ? true : null">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <input class="form-control" placeholder="Skill Name" formControlName="skillName">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <input class="form-control" placeholder="Description" formControlName="description">
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn btn-primary" [disabled]="skillForm.invalid">
+
+            {{ editMode ? 'Update' : 'Save' }}
+
+        </button>
+
+        <button *ngIf="editMode" type="button" class="btn btn-secondary ms-2" (click)="resetForm()">
+
+            Cancel
+
+        </button>
+
+    </form>
+
+    <hr>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Name</th>
+
+                <th>Description</th>
+
+                <th>Action</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr *ngFor="let skill of skills()">
+
+                <td>{{skill.skillId}}</td>
+
+                <td>{{skill.skillName}}</td>
+
+                <td>{{skill.description}}</td>
+
+                <td>
+
+                    <button type="button" class="btn btn-warning btn-sm me-2" (click)="editSkill(skill)">
+
+                        Edit
+
+                    </button>
+
+                    <button type="button" class="btn btn-danger btn-sm" (click)="deleteSkill(skill.skillId)">
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>

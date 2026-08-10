@@ -1,0 +1,108 @@
+<div class="container mt-4">
+
+    <h2>Projects</h2>
+
+    <form [formGroup]="projectForm" (ngSubmit)="saveProject()">
+
+        <div class="row">
+
+            <div class="col-md-3">
+
+                <input class="form-control" placeholder="Project Id" formControlName="projectId"
+                    [attr.readonly]="editMode ? true : null">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input class="form-control" placeholder="Project Name" formControlName="projectName">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input class="form-control" placeholder="Client Name" formControlName="clientName">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input class="form-control" placeholder="Description" formControlName="description">
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn btn-primary" [disabled]="projectForm.invalid">
+
+            {{ editMode ? 'Update' : 'Save' }}
+
+        </button>
+
+        <button *ngIf="editMode" type="button" class="btn btn-secondary ms-2" (click)="resetForm()">
+
+            Cancel
+
+        </button>
+
+    </form>
+
+    <hr>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Name</th>
+
+                <th>Client</th>
+
+                <th>Description</th>
+
+                <th>Action</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr *ngFor="let project of projects()">
+
+                <td>{{project.projectId}}</td>
+
+                <td>{{project.projectName}}</td>
+
+                <td>{{project.clientName}}</td>
+
+                <td>{{project.description}}</td>
+
+                <td>
+
+                    <button type="button" class="btn btn-warning btn-sm me-2" (click)="editProject(project)">
+
+                        Edit
+
+                    </button>
+
+                    <button type="button" class="btn btn-danger btn-sm" (click)="deleteProject(project.projectId)">
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
