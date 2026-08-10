@@ -1,7 +1,7 @@
 services:
   - type: web
     name: employee-skill-graph-backend
-    runtime: java
+    env: java
     rootDir: backend
     buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/backend-0.0.1-SNAPSHOT.jar
