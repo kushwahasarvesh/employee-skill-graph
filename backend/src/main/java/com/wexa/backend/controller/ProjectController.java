@@ -2,9 +2,11 @@ package com.wexa.backend.controller;
 
 import com.wexa.backend.model.Project;
 import com.wexa.backend.service.ProjectService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/projects")
@@ -18,11 +20,11 @@ public class ProjectController {
     }
 
     @PostMapping
-    public String create(@RequestBody Project project) {
+    public ResponseEntity<Map<String, String>> create(@RequestBody Project project) {
 
         service.save(project);
 
-        return "Project Created Successfully";
+        return ResponseEntity.ok(Map.of("message","Project Created Successfully"));
     }
 
     @GetMapping
@@ -36,21 +38,21 @@ public class ProjectController {
     }
 
     @PutMapping("/{projectId}")
-    public String update(@PathVariable String projectId,
+    public ResponseEntity<Map<String, String>> update(@PathVariable String projectId,
                          @RequestBody Project project) {
 
         project.setProjectId(projectId);
 
         service.update(project);
 
-        return "Project Updated Successfully";
+        return ResponseEntity.ok(Map.of("message","Project Updated Successfully"));
     }
 
     @DeleteMapping("/{projectId}")
-    public String delete(@PathVariable String projectId) {
+    public ResponseEntity<Map<String, String>>  delete(@PathVariable String projectId) {
 
         service.delete(projectId);
 
-        return "Project Deleted Successfully";
+        return ResponseEntity.ok(Map.of("message","Project Deleted Successfully"));
     }
 }

@@ -2,6 +2,7 @@ package com.wexa.backend.repository;
 
 import com.wexa.backend.model.Employee;
 import com.wexa.backend.model.Project;
+import com.wexa.backend.model.Recommendation;
 import com.wexa.backend.model.Skill;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Record;
@@ -139,6 +140,27 @@ public class EmployeeRepository {
         }
     }
 
+    public boolean hasSkill(String employeeId, String skillId) {
+
+        try (Session session = driver.session()) {
+
+            return session.executeRead(tx ->
+                    tx.run("""
+                        MATCH (e:Employee {employeeId:$employeeId})
+                              -[:HAS_SKILL]->
+                              (s:Skill {skillId:$skillId})
+                        RETURN count(*) AS cnt
+                        """,
+                            Map.of(
+                                    "employeeId", employeeId,
+                                    "skillId", skillId
+                            ))
+                            .single()
+                            .get("cnt")
+                            .asLong() > 0);
+        }
+    }
+
     public void assignSkill(String employeeId, String skillId) {
 
         try (Session session = driver.session()) {
@@ -148,7 +170,7 @@ public class EmployeeRepository {
                 tx.run("""
                     MATCH (e:Employee {employeeId:$employeeId})
                     MATCH (s:Skill {skillId:$skillId})
-                    MERGE (e)-[:HAS_SKILL]->(s)
+                    CREATE (e)-[:HAS_SKILL]->(s)
                     """,
                         Map.of(
                                 "employeeId", employeeId,
@@ -223,6 +245,27 @@ public class EmployeeRepository {
         return employees;
     }
 
+    public boolean hasProject(String employeeId, String projectId) {
+
+        try (Session session = driver.session()) {
+
+            return session.executeRead(tx ->
+                    tx.run("""
+                        MATCH (e:Employee {employeeId:$employeeId})
+                              -[:WORKED_ON]->
+                              (p:Project {projectId:$projectId})
+                        RETURN count(*) AS cnt
+                        """,
+                            Map.of(
+                                    "employeeId", employeeId,
+                                    "projectId", projectId
+                            ))
+                            .single()
+                            .get("cnt")
+                            .asLong() > 0);
+        }
+    }
+
     public void assignProject(String employeeId, String projectId) {
 
         try (Session session = driver.session()) {
@@ -232,7 +275,7 @@ public class EmployeeRepository {
                 tx.run("""
                     MATCH (e:Employee {employeeId:$employeeId})
                     MATCH (p:Project {projectId:$projectId})
-                    MERGE (e)-[:WORKED_ON]->(p)
+                    CREATE (e)-[:WORKED_ON]->(p)
                     """,
                         Map.of(
                                 "employeeId", employeeId,
@@ -277,9 +320,9 @@ public class EmployeeRepository {
         return projects;
     }
 
-    public List<Employee> recommendEmployees(String employeeId){
+    public List<Recommendation> recommendEmployees(String employeeId){
 
-        List<Employee> employees = new ArrayList<>();
+        List<Recommendation> recommendations = new ArrayList<>();
 
         try(Session session = driver.session()){
 
@@ -293,7 +336,9 @@ public class EmployeeRepository {
 
                         WHERE other.employeeId <> $employeeId
 
-                        RETURN DISTINCT other
+                        WITH other, collect(DISTINCT s.skillName) AS matchedSkills
+                        RETURN other, matchedSkills
+                        ORDER BY size(matchedSkills) DESC, other.name
                         """,
                                     Map.of("employeeId", employeeId))
                             .list());
@@ -301,34 +346,82 @@ public class EmployeeRepository {
             for(Record record : records){
 
                 Node node = record.get("other").asNode();
+                List<String> matchedSkills = record.get("matchedSkills")
+                        .asList(Value::asString);
 
-                employees.add(new Employee(
+                recommendations.add(new Recommendation(
                         node.get("employeeId").asString(),
                         node.get("name").asString(),
-                        node.get("email").asString(),
-                        node.get("designation").asString()
+                        matchedSkills
                 ));
             }
         }
 
-        return employees;
+        return recommendations;
     }
 
-    public void assignManager(String employeeId, String managerId){
+    public boolean hasManager(String employeeId, String managerId) {
 
-        try(Session session = driver.session()){
+        try (Session session = driver.session()) {
+
+            return session.executeRead(tx ->
+                    tx.run("""
+                        MATCH (e:Employee {employeeId:$employeeId})
+                              -[:REPORTS_TO]->
+                              (m:Employee {employeeId:$managerId})
+                        RETURN count(*) AS cnt
+                        """,
+                            Map.of(
+                                    "employeeId", employeeId,
+                                    "managerId", managerId
+                            ))
+                            .single()
+                            .get("cnt")
+                            .asLong() > 0);
+        }
+    }
+
+    /**
+     * True if assigning employeeId REPORTS_TO managerId would create a cycle
+     * (manager already reports to employee, directly or transitively).
+     */
+    public boolean wouldCreateManagerCycle(String employeeId, String managerId) {
+
+        try (Session session = driver.session()) {
+
+            return session.executeRead(tx ->
+                    tx.run("""
+                        MATCH (m:Employee {employeeId:$managerId})
+                        MATCH (e:Employee {employeeId:$employeeId})
+                        WHERE EXISTS {
+                            MATCH (m)-[:REPORTS_TO*]->(e)
+                        }
+                        RETURN count(*) AS cnt
+                        """,
+                            Map.of(
+                                    "employeeId", employeeId,
+                                    "managerId", managerId
+                            ))
+                            .single()
+                            .get("cnt")
+                            .asLong() > 0);
+        }
+    }
+
+    public void assignManager(String employeeId, String managerId) {
+
+        try (Session session = driver.session()) {
 
             session.executeWrite(tx -> {
 
                 tx.run("""
                     MATCH (e:Employee {employeeId:$employeeId})
                     MATCH (m:Employee {employeeId:$managerId})
-
-                    MERGE (e)-[:REPORTS_TO]->(m)
+                    CREATE (e)-[:REPORTS_TO]->(m)
                     """,
                         Map.of(
-                                "employeeId",employeeId,
-                                "managerId",managerId
+                                "employeeId", employeeId,
+                                "managerId", managerId
                         ));
 
                 return null;
@@ -336,31 +429,23 @@ public class EmployeeRepository {
         }
     }
 
-    public List<String> shortestPath(String emp1,String emp2){
-
-        List<String> path = new ArrayList<>();
-
-        try(Session session = driver.session()){
-
-            Record record = session.executeRead(tx ->
-                    tx.run("""
+    public List<String> shortestPath(String emp1, String emp2) {
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> {
+                var result = tx.run("""
                         MATCH p = shortestPath(
-                        (e1:Employee {employeeId:$emp1})
-                        -[:REPORTS_TO*]-
-                        (e2:Employee {employeeId:$emp2})
+                            (e1:Employee {employeeId:$emp1})
+                            -[:REPORTS_TO*]-(e2:Employee {employeeId:$emp2})
                         )
-
-                        RETURN [node IN nodes(p) | node.employeeId] AS path
+                        RETURN [node IN nodes(p) | node.name] AS path
                         """,
-                                    Map.of(
-                                            "emp1",emp1,
-                                            "emp2",emp2
-                                    ))
-                            .single());
+                        Map.of("emp1", emp1, "emp2", emp2));
 
-            path = record.get("path").asList(Value::asString);
+                if (!result.hasNext()) {
+                    return List.<String>of();
+                }
+                return result.next().get("path").asList(Value::asString);
+            });
         }
-
-        return path;
     }
 }
