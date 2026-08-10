@@ -145,14 +145,16 @@ Services under `src/app/services/` call `http://localhost:8080`.
 
 ```bash
 cd backend
-./mvnw spring-boot:run
+./mvnw clean package -DskipTests
+java -jar target/backend-0.0.1-SNAPSHOT.jar
 ```
 
 On Windows:
 
 ```bash
 cd backend
-.\mvnw.cmd spring-boot:run
+.\mvnw.cmd clean package -DskipTests
+java -jar target/backend-0.0.1-SNAPSHOT.jar
 ```
 
 - API: [http://localhost:8080](http://localhost:8080)
