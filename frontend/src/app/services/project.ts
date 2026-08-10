@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Project } from '../models/project';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class ProjectService {
 
   private http = inject(HttpClient);
 
-  private api = 'http://localhost:8080/projects';
+  private api = `${environment.apiUrl}/projects`;
 
   getProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(`${this.api}?_=${Date.now()}`, {

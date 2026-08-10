@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Skill } from '../models/skill';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class SkillService {
 
   private http = inject(HttpClient);
 
-  private api = 'http://localhost:8080/skills';
+  private api = `${environment.apiUrl}/skills`;
 
   getSkills(): Observable<Skill[]> {
     return this.http.get<Skill[]>(`${this.api}?_=${Date.now()}`, {

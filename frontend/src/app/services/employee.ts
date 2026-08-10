@@ -5,6 +5,7 @@ import { Employee } from '../models/employee';
 import { Skill } from '../models/skill';
 import { Project } from '../models/project';
 import { Recommendation } from '../models/recommendation';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class EmployeeService {
 
   private http = inject(HttpClient);
 
-  private api = 'http://localhost:8080/employees';
+  private api = `${environment.apiUrl}/employees`;
 
   getEmployees(): Observable<Employee[]> {
     return this.http.get<Employee[]>(this.api, {

@@ -1,5 +1,5 @@
-
 export const environment = {
-  
-  apiUrl: 'http://localhost:8080'
+  production: true,
+  apiUrl: 'https://employee-skill-graph-production.up.railway.app'
+  //apiUrl: 'http://localhost:8080'
 };
