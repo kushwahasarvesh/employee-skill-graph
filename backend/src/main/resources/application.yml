@@ -1,5 +1,5 @@
 app:
   cognodb:
-    uri: bolt+s://db-4bf3d44c.databases.cognodb.com
-    username: cognodb
-    password: 02f9c9b8712a7654061f0c7efd3c15cc
+    uri: ${SPRING_NEO4J_URI} #bolt+s://db-4bf3d44c.databases.cognodb.com
+    username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME} # cognodb
+    password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD} #02f9c9b8712a7654061f0c7efd3c15cc
