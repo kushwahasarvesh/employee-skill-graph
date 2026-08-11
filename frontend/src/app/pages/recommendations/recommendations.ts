@@ -7,6 +7,7 @@ import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { Employee } from '../../models/employee';
 import { Recommendation } from '../../models/recommendation';
 import { EmployeeService } from '../../services/employee';
+import { AlertService } from '../../services/alert';
 
 @Component({
   selector: 'app-recommendations',
@@ -18,6 +19,7 @@ import { EmployeeService } from '../../services/employee';
 export class RecommendationsComponent implements OnInit {
 
   private employeeService = inject(EmployeeService);
+  private alert = inject(AlertService);
 
   employees = signal<Employee[]>([]);
   employeeId = '';
@@ -35,7 +37,7 @@ export class RecommendationsComponent implements OnInit {
 
   findSimilar() {
     if (!this.employeeId) {
-      alert('Please select an employee.');
+      this.alert.warning('Please select an employee.');
       return;
     }
 

@@ -73,6 +73,10 @@
 
         <tbody>
 
+            <tr *ngIf="projects().length === 0">
+                <td colspan="5" class="empty-table-message">No record found of project</td>
+            </tr>
+
             <tr *ngFor="let project of projects()">
 
                 <td>{{project.projectId}}</td>
@@ -91,7 +95,7 @@
 
                     </button>
 
-                    <button type="button" class="btn btn-danger btn-sm" (click)="deleteProject(project.projectId)">
+                    <button type="button" class="btn btn-danger btn-sm" (click)="deleteProject(project)">
 
                         Delete
 

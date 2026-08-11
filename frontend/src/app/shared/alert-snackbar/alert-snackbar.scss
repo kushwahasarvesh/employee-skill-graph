@@ -1,0 +1,36 @@
+.app-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 280px;
+  max-width: 440px;
+  padding: 0.15rem 0.1rem;
+  color: #fff;
+  font-family: 'Outfit', 'Segoe UI', sans-serif;
+}
+
+.app-alert__icon {
+  flex-shrink: 0;
+  font-size: 1.4rem;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.app-alert__message {
+  flex: 1;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.app-alert__close {
+  --mdc-icon-button-icon-color: #fff;
+  --mat-icon-button-state-layer-color: #fff;
+  color: #fff;
+}
+
+.app-alert__close mat-icon {
+  font-size: 1.15rem;
+  width: 1.15rem;
+  height: 1.15rem;
+}

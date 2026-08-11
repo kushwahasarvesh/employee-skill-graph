@@ -31,7 +31,7 @@
     </thead>
     <tbody>
       <tr *ngIf="recommendations().length === 0">
-        <td colspan="2">No similar employees found.</td>
+        <td colspan="2" class="empty-table-message">No record found of employee</td>
       </tr>
       <tr *ngFor="let rec of recommendations()">
         <td>{{ rec.name }}</td>

@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ProjectService } from '../../services/project';
+import { AlertService } from '../../services/alert';
 import { Project } from '../../models/project';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -14,6 +15,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 export class ProjectsComponent implements OnInit {
 
   private projectService = inject(ProjectService);
+  private alert = inject(AlertService);
   private fb = inject(FormBuilder);
 
   projects = signal<Project[]>([]);
@@ -36,6 +38,7 @@ export class ProjectsComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
+        this.alert.error('Failed to load projects');
       }
     });
   }
@@ -53,6 +56,7 @@ export class ProjectsComponent implements OnInit {
   saveProject() {
     if (this.projectForm.invalid) {
       this.projectForm.markAllAsTouched();
+      this.alert.warning('Please fill all required fields');
       return;
     }
 
@@ -66,11 +70,11 @@ export class ProjectsComponent implements OnInit {
           );
           this.resetForm();
           this.loadProjects();
-          alert('Project Updated Successfully');
+          this.alert.update('Project Updated Successfully');
         },
         error: (err) => {
           console.error(err);
-          alert('Failed to update project');
+          this.alert.error('Failed to update project');
         }
       });
       return;
@@ -80,7 +84,7 @@ export class ProjectsComponent implements OnInit {
       (p) => p.projectId === project.projectId
     );
     if (alreadyExists) {
-      alert('This Project ID already exists');
+      this.alert.warning('This Project ID already exists');
       return;
     }
 
@@ -89,11 +93,11 @@ export class ProjectsComponent implements OnInit {
         this.projects.update((list) => [...list, { ...project }]);
         this.resetForm();
         this.loadProjects();
-        alert('Project Added Successfully');
+        this.alert.success('Project Added Successfully');
       },
       error: (err) => {
         console.error(err);
-        alert('Failed to add project');
+        this.alert.error('Failed to add project');
       }
     });
   }
@@ -103,21 +107,23 @@ export class ProjectsComponent implements OnInit {
     this.projectForm.patchValue(project);
   }
 
-  deleteProject(id: string) {
-    if (!confirm('Delete Project?')) {
-      return;
-    }
-    this.projectService.deleteProject(id).subscribe({
-      next: () => {
-        this.projects.update((list) => list.filter((p) => p.projectId !== id));
-        this.resetForm();
-        this.loadProjects();
-        alert('Project Deleted Successfully');
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Failed to delete project');
+  deleteProject(project: Project) {
+    this.alert.confirmDelete(project.projectName, 'Do you want to delete this project?').subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
       }
+      this.projectService.deleteProject(project.projectId).subscribe({
+        next: () => {
+          this.projects.update((list) => list.filter((p) => p.projectId !== project.projectId));
+          this.resetForm();
+          this.loadProjects();
+          this.alert.deleted('Project Deleted Successfully');
+        },
+        error: (err) => {
+          console.error(err);
+          this.alert.error('Failed to delete project');
+        }
+      });
     });
   }
 

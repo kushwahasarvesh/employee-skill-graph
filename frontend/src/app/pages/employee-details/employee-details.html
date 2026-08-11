@@ -22,7 +22,7 @@
 
         <h4>Assigned Skills</h4>
 
-        <table class="table table-bordered table-striped" *ngIf="skills().length; else noSkills">
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -31,6 +31,9 @@
                 </tr>
             </thead>
             <tbody>
+                <tr *ngIf="skills().length === 0">
+                    <td colspan="3" class="empty-table-message">No record found of skill</td>
+                </tr>
                 <tr *ngFor="let skill of skills()">
                     <td>{{ skill.skillId }}</td>
                     <td>{{ skill.skillName }}</td>
@@ -39,15 +42,11 @@
             </tbody>
         </table>
 
-        <ng-template #noSkills>
-            <p class="text-muted">No skills assigned.</p>
-        </ng-template>
-
         <hr>
 
         <h4>Assigned Projects</h4>
 
-        <table class="table table-bordered table-striped" *ngIf="projects().length; else noProjects">
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -57,6 +56,9 @@
                 </tr>
             </thead>
             <tbody>
+                <tr *ngIf="projects().length === 0">
+                    <td colspan="4" class="empty-table-message">No record found of project</td>
+                </tr>
                 <tr *ngFor="let project of projects()">
                     <td>{{ project.projectId }}</td>
                     <td>{{ project.projectName }}</td>
@@ -65,10 +67,6 @@
                 </tr>
             </tbody>
         </table>
-
-        <ng-template #noProjects>
-            <p class="text-muted">No projects assigned.</p>
-        </ng-template>
 
     </ng-container>
 

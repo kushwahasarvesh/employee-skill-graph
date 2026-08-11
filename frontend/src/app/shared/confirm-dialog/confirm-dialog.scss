@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  min-width: 280px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+mat-dialog-content {
+  color: #4b5563;
+}
+
+.confirm-delete {
+  --mdc-filled-button-container-color: #d96b4c;
+  --mdc-filled-button-label-text-color: #fff;
+}

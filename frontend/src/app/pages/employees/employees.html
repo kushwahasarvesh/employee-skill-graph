@@ -20,7 +20,17 @@
 
             <div class="col-md-3">
 
-                <input class="form-control" placeholder="Email" formControlName="email">
+                <input class="form-control"
+                    type="email"
+                    placeholder="Email"
+                    formControlName="email"
+                    [class.is-invalid]="email?.invalid && email?.touched">
+                <div class="invalid-feedback d-block" *ngIf="email?.touched && email?.hasError('required')">
+                    Email ID is required
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="email?.touched && email?.hasError('pattern')">
+                    Please enter a valid email ID
+                </div>
 
             </div>
 
@@ -66,7 +76,13 @@
 
         <tbody>
 
-            <tr *ngFor="let employee of employees()">
+            <tr *ngIf="employees().length === 0">
+                <td colspan="5" class="empty-table-message">No record found of employee</td>
+            </tr>
+
+            <tr class="employee-row"
+                *ngFor="let employee of employees()"
+                (click)="openEmployeeDetails(employee)">
 
                 <td>{{employee.employeeId}}</td>
 
@@ -76,14 +92,7 @@
 
                 <td>{{employee.designation}}</td>
 
-                <td>
-
-                    <a class="btn btn-info btn-sm me-2"
-                       [routerLink]="['/employees', employee.employeeId]">
-
-                        Details
-
-                    </a>
+                <td (click)="$event.stopPropagation()">
 
                     <button class="btn btn-warning btn-sm me-2" (click)="editEmployee(employee)">
 
@@ -91,7 +100,7 @@
 
                     </button>
 
-                    <button class="btn btn-danger btn-sm" (click)="deleteEmployee(employee.employeeId)">
+                    <button class="btn btn-danger btn-sm" (click)="deleteEmployee(employee)">
 
                         Delete
 

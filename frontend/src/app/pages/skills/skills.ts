@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { SkillService } from '../../services/skill';
+import { AlertService } from '../../services/alert';
 import { Skill } from '../../models/skill';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -14,6 +15,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 export class SkillsComponent implements OnInit {
 
   private skillService = inject(SkillService);
+  private alert = inject(AlertService);
   private fb = inject(FormBuilder);
 
   skills = signal<Skill[]>([]);
@@ -35,6 +37,7 @@ export class SkillsComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
+        this.alert.error('Failed to load skills');
       }
     });
   }
@@ -51,6 +54,7 @@ export class SkillsComponent implements OnInit {
   saveSkill() {
     if (this.skillForm.invalid) {
       this.skillForm.markAllAsTouched();
+      this.alert.warning('Please fill all required fields');
       return;
     }
 
@@ -64,11 +68,11 @@ export class SkillsComponent implements OnInit {
           );
           this.resetForm();
           this.loadSkills();
-          alert('Skill Updated Successfully');
+          this.alert.update('Skill Updated Successfully');
         },
         error: (err) => {
           console.error(err);
-          alert('Failed to update skill');
+          this.alert.error('Failed to update skill');
         }
       });
       return;
@@ -78,7 +82,7 @@ export class SkillsComponent implements OnInit {
       (s) => s.skillId === skill.skillId
     );
     if (alreadyExists) {
-      alert('This Skill ID already exists');
+      this.alert.warning('This Skill ID already exists');
       return;
     }
 
@@ -87,11 +91,11 @@ export class SkillsComponent implements OnInit {
         this.skills.update((list) => [...list, { ...skill }]);
         this.resetForm();
         this.loadSkills();
-        alert('Skill Added Successfully');
+        this.alert.success('Skill Added Successfully');
       },
       error: (err) => {
         console.error(err);
-        alert('Failed to add skill');
+        this.alert.error('Failed to add skill');
       }
     });
   }
@@ -101,21 +105,23 @@ export class SkillsComponent implements OnInit {
     this.skillForm.patchValue(skill);
   }
 
-  deleteSkill(id: string) {
-    if (!confirm('Delete Skill?')) {
-      return;
-    }
-    this.skillService.deleteSkill(id).subscribe({
-      next: () => {
-        this.skills.update((list) => list.filter((s) => s.skillId !== id));
-        this.resetForm();
-        this.loadSkills();
-        alert('Skill Deleted Successfully');
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Failed to delete skill');
+  deleteSkill(skill: Skill) {
+    this.alert.confirmDelete(skill.skillName, 'Do you want to delete this skill?').subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
       }
+      this.skillService.deleteSkill(skill.skillId).subscribe({
+        next: () => {
+          this.skills.update((list) => list.filter((s) => s.skillId !== skill.skillId));
+          this.resetForm();
+          this.loadSkills();
+          this.alert.deleted('Skill Deleted Successfully');
+        },
+        error: (err) => {
+          console.error(err);
+          this.alert.error('Failed to delete skill');
+        }
+      });
     });
   }
 

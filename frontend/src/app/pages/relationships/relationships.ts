@@ -10,6 +10,7 @@ import { Project } from '../../models/project';
 import { EmployeeService } from '../../services/employee';
 import { SkillService } from '../../services/skill';
 import { ProjectService } from '../../services/project';
+import { AlertService } from '../../services/alert';
 
 @Component({
   selector: 'app-relationships',
@@ -26,6 +27,7 @@ export class RelationshipsComponent implements OnInit {
   employeeService = inject(EmployeeService);
   skillService = inject(SkillService);
   projectService = inject(ProjectService);
+  private alert = inject(AlertService);
 
   employees: Employee[] = [];
   skills: Skill[] = [];
@@ -53,7 +55,7 @@ export class RelationshipsComponent implements OnInit {
 
   assignSkill() {
     if (!this.skillEmployeeId || !this.skillId) {
-      alert('Please select both employee and skill.');
+      this.alert.warning('Please select both employee and skill.');
       return;
     }
 
@@ -73,11 +75,11 @@ export class RelationshipsComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
-        alert('Skill assigned successfully.');
+        this.alert.success('Skill assigned successfully.');
         this.skillEmployeeId = '';
         this.skillId = '';
       },
-      error: (err) => alert(this.errorMessage(
+      error: (err) => this.alert.error(this.errorMessage(
         err,
         `This skill already exists for the selected employee (${employeeName}).`
       ))
@@ -86,7 +88,7 @@ export class RelationshipsComponent implements OnInit {
 
   assignProject() {
     if (!this.projectEmployeeId || !this.projectId) {
-      alert('Please select both employee and project.');
+      this.alert.warning('Please select both employee and project.');
       return;
     }
 
@@ -106,11 +108,11 @@ export class RelationshipsComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
-        alert('Project assigned successfully.');
+        this.alert.success('Project assigned successfully.');
         this.projectEmployeeId = '';
         this.projectId = '';
       },
-      error: (err) => alert(this.errorMessage(
+      error: (err) => this.alert.error(this.errorMessage(
         err,
         `This project already exists for the selected employee (${employeeName}).`
       ))
@@ -119,12 +121,12 @@ export class RelationshipsComponent implements OnInit {
 
   assignManager() {
     if (!this.managerEmployeeId || !this.managerId) {
-      alert('Please select both employee and manager.');
+      this.alert.warning('Please select both employee and manager.');
       return;
     }
 
     if (this.managerEmployeeId === this.managerId) {
-      alert('An employee cannot be their own manager.');
+      this.alert.warning('An employee cannot be their own manager.');
       return;
     }
 
@@ -132,11 +134,11 @@ export class RelationshipsComponent implements OnInit {
       .assignManager(this.managerEmployeeId, this.managerId)
       .subscribe({
         next: () => {
-          alert('Manager assigned successfully.');
+          this.alert.success('Manager assigned successfully.');
           this.managerEmployeeId = '';
           this.managerId = '';
         },
-        error: (err) => alert(this.errorMessage(err, 'Failed to assign manager.'))
+        error: (err) => this.alert.error(this.errorMessage(err, 'Failed to assign manager.'))
       });
   }
 

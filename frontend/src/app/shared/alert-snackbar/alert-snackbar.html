@@ -1,0 +1,7 @@
+<div [class]="'app-alert app-alert--' + data.type" role="status">
+  <mat-icon class="app-alert__icon">{{ icons[data.type] }}</mat-icon>
+  <span class="app-alert__message">{{ data.message }}</span>
+  <button matIconButton type="button" class="app-alert__close" (click)="dismiss()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

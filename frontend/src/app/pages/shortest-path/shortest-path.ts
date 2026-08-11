@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Employee } from '../../models/employee';
 import { EmployeeService } from '../../services/employee';
+import { AlertService } from '../../services/alert';
 
 @Component({
   selector: 'app-shortest-path',
@@ -15,6 +16,7 @@ import { EmployeeService } from '../../services/employee';
 export class ShortestPathComponent implements OnInit {
 
   private employeeService = inject(EmployeeService);
+  private alert = inject(AlertService);
 
   employees = signal<Employee[]>([]);
   emp1 = '';
@@ -33,7 +35,7 @@ export class ShortestPathComponent implements OnInit {
 
   findPath() {
     if (!this.emp1 || !this.emp2) {
-      alert('Please select both employees.');
+      this.alert.warning('Please select both employees.');
       return;
     }
 
