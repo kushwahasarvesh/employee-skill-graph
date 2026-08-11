@@ -1,18 +1,1 @@
-.employee-row {
-  cursor: pointer;
-}
-
-.employee-row:hover {
-  background-color: #eef5ff;
-}
-
-.invalid-feedback {
-  color: #d96b4c;
-  font-size: 0.78rem;
-  font-weight: 500;
-  margin-top: 0.3rem;
-}
-
-.is-invalid {
-  border-color: #d96b4c;
-}
+/* Shared CRUD layout lives in styles.scss */

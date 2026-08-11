@@ -35,6 +35,15 @@ export class EmployeeDetailsComponent implements OnInit {
     this.loadDetails(employeeId);
   }
 
+  initials(name: string): string {
+    return (name ?? '')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0].toUpperCase())
+      .join('');
+  }
+
   loadDetails(employeeId: string) {
     this.loading.set(true);
     this.error.set(null);

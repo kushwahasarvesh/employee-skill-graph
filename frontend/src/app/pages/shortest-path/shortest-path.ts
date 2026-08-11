@@ -1,15 +1,16 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { Employee } from '../../models/employee';
 import { EmployeeService } from '../../services/employee';
 import { AlertService } from '../../services/alert';
+import { AppSelectComponent } from '../../shared/app-select/app-select';
 
 @Component({
   selector: 'app-shortest-path',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AppSelectComponent],
   templateUrl: './shortest-path.html',
   styleUrl: './shortest-path.scss'
 })
@@ -19,6 +20,9 @@ export class ShortestPathComponent implements OnInit {
   private alert = inject(AlertService);
 
   employees = signal<Employee[]>([]);
+  employeeOptions = computed(() =>
+    this.employees().map((employee) => ({ value: employee.employeeId, label: employee.name }))
+  );
   emp1 = '';
   emp2 = '';
   path = signal<string[]>([]);
@@ -54,6 +58,21 @@ export class ShortestPathComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  initials(name: string): string {
+    return (name ?? '')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0].toUpperCase())
+      .join('');
+  }
+
+  designation(name: string): string {
+    return this.employees().find(
+      (e) => e.name === name || e.employeeId === name
+    )?.designation ?? '';
   }
 
   private toName(step: string): string {

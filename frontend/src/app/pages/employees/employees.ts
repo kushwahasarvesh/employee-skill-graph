@@ -39,6 +39,25 @@ export class EmployeesComponent implements OnInit {
     this.loadEmployees();
   }
 
+  initials(name: string): string {
+    return (name ?? '')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0].toUpperCase())
+      .join('');
+  }
+
+  resetForm() {
+    this.employeeForm.reset({
+      employeeId: '',
+      name: '',
+      email: '',
+      designation: ''
+    });
+    this.editMode = false;
+  }
+
   loadEmployees() {
     this.employeeService.getEmployees().subscribe({
       next: (response) => {
@@ -77,8 +96,7 @@ export class EmployeesComponent implements OnInit {
       this.employeeService.updateEmployee(employee).subscribe({
         next: () => {
           this.alert.update('Employee Updated Successfully');
-          this.employeeForm.reset();
-          this.editMode = false;
+          this.resetForm();
           this.loadEmployees();
         },
         error: (err) => {
@@ -97,7 +115,7 @@ export class EmployeesComponent implements OnInit {
       this.employeeService.addEmployee(employee).subscribe({
         next: () => {
           this.alert.success('Employee Added Successfully');
-          this.employeeForm.reset();
+          this.resetForm();
           this.loadEmployees();
         },
         error: (err) => {
@@ -115,6 +133,7 @@ export class EmployeesComponent implements OnInit {
   editEmployee(employee: Employee) {
     this.editMode = true;
     this.employeeForm.patchValue(employee);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   deleteEmployee(employee: Employee) {

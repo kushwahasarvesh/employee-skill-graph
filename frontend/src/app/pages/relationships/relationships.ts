@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { switchMap, throwError } from 'rxjs';
@@ -11,13 +11,15 @@ import { EmployeeService } from '../../services/employee';
 import { SkillService } from '../../services/skill';
 import { ProjectService } from '../../services/project';
 import { AlertService } from '../../services/alert';
+import { AppSelectComponent } from '../../shared/app-select/app-select';
 
 @Component({
   selector: 'app-relationships',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    AppSelectComponent
   ],
   templateUrl: './relationships.html',
   styleUrl: './relationships.scss'
@@ -29,9 +31,19 @@ export class RelationshipsComponent implements OnInit {
   projectService = inject(ProjectService);
   private alert = inject(AlertService);
 
-  employees: Employee[] = [];
-  skills: Skill[] = [];
-  projects: Project[] = [];
+  employees = signal<Employee[]>([]);
+  skills = signal<Skill[]>([]);
+  projects = signal<Project[]>([]);
+
+  employeeOptions = computed(() =>
+    this.employees().map((employee) => ({ value: employee.employeeId, label: employee.name }))
+  );
+  skillOptions = computed(() =>
+    this.skills().map((skill) => ({ value: skill.skillId, label: skill.skillName }))
+  );
+  projectOptions = computed(() =>
+    this.projects().map((project) => ({ value: project.projectId, label: project.projectName }))
+  );
 
   skillEmployeeId = '';
   skillId = '';
@@ -44,13 +56,13 @@ export class RelationshipsComponent implements OnInit {
 
   ngOnInit() {
     this.employeeService.getEmployees()
-      .subscribe(res => this.employees = res);
+      .subscribe(res => this.employees.set(res ?? []));
 
     this.skillService.getSkills()
-      .subscribe(res => this.skills = res);
+      .subscribe(res => this.skills.set(res ?? []));
 
     this.projectService.getProjects()
-      .subscribe(res => this.projects = res);
+      .subscribe(res => this.projects.set(res ?? []));
   }
 
   assignSkill() {
@@ -143,7 +155,7 @@ export class RelationshipsComponent implements OnInit {
   }
 
   private employeeName(employeeId: string): string {
-    return this.employees.find(e => e.employeeId === employeeId)?.name || employeeId;
+    return this.employees().find(e => e.employeeId === employeeId)?.name || employeeId;
   }
 
   private errorMessage(err: any, fallback: string): string {
