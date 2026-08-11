@@ -3,6 +3,7 @@ package com.wexa.backend.controller;
 import com.wexa.backend.model.Employee;
 import com.wexa.backend.model.Project;
 import com.wexa.backend.model.Recommendation;
+import com.wexa.backend.model.ReportingPath;
 import com.wexa.backend.model.Skill;
 import com.wexa.backend.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
@@ -113,7 +114,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/path/{emp1}/{emp2}")
-    public ResponseEntity<List<String>> shortestPath(
+    public ResponseEntity<ReportingPath> shortestPath(
             @PathVariable String emp1,
             @PathVariable String emp2){
 

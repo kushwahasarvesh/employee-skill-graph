@@ -4,6 +4,7 @@ import com.wexa.backend.exception.BusinessException;
 import com.wexa.backend.model.Employee;
 import com.wexa.backend.model.Project;
 import com.wexa.backend.model.Recommendation;
+import com.wexa.backend.model.ReportingPath;
 import com.wexa.backend.model.Skill;
 import com.wexa.backend.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -83,10 +84,10 @@ public class EmployeeService {
         }
         repository.assignManager(employeeId, managerId);
     }
-    public List<String> shortestPath(String emp1, String emp2) {
+    public ReportingPath shortestPath(String emp1, String emp2) {
         if (emp1.equals(emp2)) {
             Employee employee = repository.findById(emp1);
-            return List.of(employee.getName());
+            return new ReportingPath(List.of(employee), List.of());
         }
         return repository.shortestPath(emp1, emp2);
     }

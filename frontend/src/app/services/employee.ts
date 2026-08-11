@@ -5,6 +5,7 @@ import { Employee } from '../models/employee';
 import { Skill } from '../models/skill';
 import { Project } from '../models/project';
 import { Recommendation } from '../models/recommendation';
+import { ReportingPath } from '../models/reporting-path';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -68,8 +69,10 @@ export class EmployeeService {
     return this.postAssign(`${this.api}/${employeeId}/manager/${managerId}`);
   }
 
-  getShortestPath(emp1: string, emp2: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.api}/path/${emp1}/${emp2}`);
+  getShortestPath(emp1: string, emp2: string): Observable<ReportingPath | string[]> {
+    return this.http.get<ReportingPath | string[]>(
+      `${this.api}/path/${encodeURIComponent(emp1)}/${encodeURIComponent(emp2)}`
+    );
   }
 
   /**

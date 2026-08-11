@@ -90,7 +90,7 @@ It shows how a graph database can:
 - CRUD for employees, skills, and projects
 - Assign skills, projects, and managers (with duplicate / self-manager / cycle checks)
 - Skill-based peer recommendations
-- Shortest path along `REPORTS_TO*`
+- Shortest path along undirected `REPORTS_TO*`, with the real reporter → manager direction on each hop
 - Connection check at `GET /test`
 
 ### Configuration
@@ -198,7 +198,7 @@ Base URL: `http://localhost:8080`
 | GET    | `/employees/{employeeId}/projects`           | List projects for employee           |
 | GET    | `/employees/{employeeId}/recommendations`    | Recommend similar employees          |
 | POST   | `/employees/{employeeId}/manager/{managerId}`| Assign manager (`REPORTS_TO`)        |
-| GET    | `/employees/path/{emp1}/{emp2}`              | Shortest path via reporting hierarchy|
+| GET    | `/employees/path/{emp1}/{emp2}`              | Shortest undirected `REPORTS_TO` path, with hop directions|
 
 ### Skills
 

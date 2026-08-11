@@ -3,6 +3,8 @@ package com.wexa.backend.repository;
 import com.wexa.backend.model.Employee;
 import com.wexa.backend.model.Project;
 import com.wexa.backend.model.Recommendation;
+import com.wexa.backend.model.ReportingHop;
+import com.wexa.backend.model.ReportingPath;
 import com.wexa.backend.model.Skill;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Record;
@@ -429,7 +431,7 @@ public class EmployeeRepository {
         }
     }
 
-    public List<String> shortestPath(String emp1, String emp2) {
+    public ReportingPath shortestPath(String emp1, String emp2) {
         try (Session session = driver.session()) {
             return session.executeRead(tx -> {
                 var result = tx.run("""
@@ -437,15 +439,38 @@ public class EmployeeRepository {
                             (e1:Employee {employeeId:$emp1})
                             -[:REPORTS_TO*]-(e2:Employee {employeeId:$emp2})
                         )
-                        RETURN [node IN nodes(p) | node.name] AS path
+                        RETURN nodes(p) AS nodes,
+                               [r IN relationships(p) | startNode(r).employeeId] AS reporterIds,
+                               [r IN relationships(p) | endNode(r).employeeId] AS managerIds
                         """,
                         Map.of("emp1", emp1, "emp2", emp2));
 
                 if (!result.hasNext()) {
-                    return List.<String>of();
+                    return new ReportingPath(List.of(), List.of());
                 }
-                return result.next().get("path").asList(Value::asString);
+
+                Record record = result.next();
+                List<Employee> people = record.get("nodes").asList(value ->
+                        toEmployee(value.asNode()));
+                List<String> reporterIds = record.get("reporterIds").asList(Value::asString);
+                List<String> managerIds = record.get("managerIds").asList(Value::asString);
+
+                List<ReportingHop> hops = new ArrayList<>();
+                int hopCount = Math.min(reporterIds.size(), managerIds.size());
+                for (int i = 0; i < hopCount; i++) {
+                    hops.add(new ReportingHop(reporterIds.get(i), managerIds.get(i)));
+                }
+                return new ReportingPath(people, hops);
             });
         }
+    }
+
+    private Employee toEmployee(Node node) {
+        return new Employee(
+                node.get("employeeId").asString(""),
+                node.get("name").asString(""),
+                node.get("email").asString(""),
+                node.get("designation").asString("")
+        );
     }
 }

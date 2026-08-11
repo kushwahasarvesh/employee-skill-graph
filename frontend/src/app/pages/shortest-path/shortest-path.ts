@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { Employee } from '../../models/employee';
+import { ReportingHop, ReportingPath } from '../../models/reporting-path';
 import { EmployeeService } from '../../services/employee';
 import { AlertService } from '../../services/alert';
 import { AppSelectComponent } from '../../shared/app-select/app-select';
@@ -25,7 +26,7 @@ export class ShortestPathComponent implements OnInit {
   );
   emp1 = '';
   emp2 = '';
-  path = signal<string[]>([]);
+  path = signal<ReportingPath | null>(null);
   searched = signal(false);
   loading = signal(false);
   error = signal('');
@@ -46,11 +47,11 @@ export class ShortestPathComponent implements OnInit {
     this.loading.set(true);
     this.error.set('');
     this.searched.set(true);
-    this.path.set([]);
+    this.path.set(null);
 
     this.employeeService.getShortestPath(this.emp1, this.emp2).subscribe({
       next: (res) => {
-        this.path.set((res ?? []).map((step) => this.toName(step)));
+        this.path.set(this.normalizePath(res));
         this.loading.set(false);
       },
       error: () => {
@@ -60,8 +61,8 @@ export class ShortestPathComponent implements OnInit {
     });
   }
 
-  initials(name: string): string {
-    return (name ?? '')
+  initials(person: Employee): string {
+    return (person?.name ?? '')
       .split(' ')
       .filter(Boolean)
       .slice(0, 2)
@@ -69,16 +70,67 @@ export class ShortestPathComponent implements OnInit {
       .join('');
   }
 
-  designation(name: string): string {
-    return this.employees().find(
-      (e) => e.name === name || e.employeeId === name
-    )?.designation ?? '';
+  hasDirectedHops(): boolean {
+    return (this.path()?.hops?.length ?? 0) > 0;
   }
 
-  private toName(step: string): string {
+  hop(index: number): ReportingHop | undefined {
+    return this.path()?.hops?.[index];
+  }
+
+  /** True when the left person reports to the right person. */
+  reportsForward(index: number): boolean {
+    const people = this.path()?.people ?? [];
+    const hop = this.hop(index);
+    const left = people[index];
+    if (!hop || !left) {
+      return true;
+    }
+    return hop.reporterId === left.employeeId;
+  }
+
+  hopLabel(index: number): string {
+    const hop = this.hop(index);
+    if (!hop) {
+      return 'REPORTS_TO';
+    }
+    return `${this.personName(hop.reporterId)} reports to ${this.personName(hop.managerId)}`;
+  }
+
+  private personName(employeeId: string): string {
+    const fromPath = this.path()?.people?.find((person) => person.employeeId === employeeId);
+    if (fromPath?.name) {
+      return fromPath.name;
+    }
+    return this.employees().find((person) => person.employeeId === employeeId)?.name ?? employeeId;
+  }
+
+  private normalizePath(res: ReportingPath | string[] | null | undefined): ReportingPath {
+    if (Array.isArray(res)) {
+      return {
+        people: res.map((step) => this.toPerson(step)),
+        hops: []
+      };
+    }
+
+    return {
+      people: (res?.people ?? []).map((person) => this.toPerson(person)),
+      hops: res?.hops ?? []
+    };
+  }
+
+  private toPerson(step: Employee | string): Employee {
+    if (typeof step !== 'string') {
+      return step;
+    }
     const match = this.employees().find(
-      (e) => e.employeeId === step || e.name === step
+      (employee) => employee.employeeId === step || employee.name === step
     );
-    return match?.name ?? step;
+    return match ?? {
+      employeeId: step,
+      name: step,
+      email: '',
+      designation: ''
+    };
   }
 }

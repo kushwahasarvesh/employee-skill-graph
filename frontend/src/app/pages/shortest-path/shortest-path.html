@@ -6,7 +6,7 @@
       <div class="hero-row">
         <div>
           <h1>Shortest path</h1>
-          <p class="lede">Trace the reporting chain between two people in the organization.</p>
+          <p class="lede">Trace how two people connect through the org chart.</p>
         </div>
       </div>
     </header>
@@ -15,7 +15,7 @@
       <div class="panel-head">
         <div>
           <h2>Find reporting path</h2>
-          <p class="panel-sub">Select two employees to see how they connect through managers.</p>
+          <p class="panel-sub">Select two employees to see the shortest REPORTS_TO chain between them.</p>
         </div>
       </div>
 
@@ -60,29 +60,56 @@
     <section *ngIf="searched() && !loading() && !error()" class="panel table-panel">
       <div class="panel-head">
         <h2>Reporting chain</h2>
-        <span class="count-pill" *ngIf="path().length > 0">{{ path().length }} steps</span>
+        <span class="count-pill" *ngIf="(path()?.people?.length ?? 0) > 0">
+          {{ path()?.people?.length }} {{ (path()?.people?.length ?? 0) === 1 ? 'person' : 'people' }}
+        </span>
       </div>
 
-      <p *ngIf="path().length === 0" class="empty-copy">
+      <p *ngIf="!(path()?.people?.length)" class="empty-copy">
         No reporting path found between the selected employees.
       </p>
 
-      <div *ngIf="path().length > 0" class="path-chain">
-        <ng-container *ngFor="let name of path(); let last = last">
-          <div class="path-node">
-            <span class="avatar">{{ initials(name) }}</span>
-            <span class="person-meta">
-              <span class="person-name">{{ name }}</span>
-              <span class="person-id" *ngIf="designation(name) as role">{{ role }}</span>
-            </span>
-          </div>
-          <div *ngIf="!last" class="path-arrow" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-        </ng-container>
-      </div>
+      <ng-container *ngIf="path()?.people?.length">
+        <p class="path-hint" *ngIf="hasDirectedHops()">
+          Arrows follow the real <strong>REPORTS_TO</strong> direction (employee → manager),
+          not left-to-right order. The chain can go up to a shared manager and back down.
+        </p>
+        <p class="path-hint" *ngIf="!hasDirectedHops()">
+          These people are connected through <strong>REPORTS_TO</strong> in the org chart.
+        </p>
+
+        <div class="path-chain">
+          <ng-container *ngFor="let person of path()?.people; let i = index; let last = last">
+            <div class="path-node">
+              <span class="avatar">{{ initials(person) }}</span>
+              <span class="person-meta">
+                <span class="person-name">{{ person.name }}</span>
+                <span class="person-id" *ngIf="person.designation">{{ person.designation }}</span>
+              </span>
+            </div>
+            <div
+              *ngIf="!last"
+              class="path-hop"
+              [class.reverse]="hasDirectedHops() && !reportsForward(i)"
+              [class.undirected]="!hasDirectedHops()"
+              [attr.title]="hasDirectedHops() ? hopLabel(i) : 'Connected via REPORTS_TO'">
+              <span class="hop-label">{{ hasDirectedHops() ? 'reports to' : 'connected' }}</span>
+              <span class="path-arrow" aria-hidden="true">
+                <svg *ngIf="hasDirectedHops()" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <svg *ngIf="!hasDirectedHops()" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </div>
+          </ng-container>
+        </div>
+
+        <ul class="hop-list" *ngIf="hasDirectedHops()">
+          <li *ngFor="let hop of path()?.hops; let i = index">{{ hopLabel(i) }}</li>
+        </ul>
+      </ng-container>
     </section>
 
   </div>
