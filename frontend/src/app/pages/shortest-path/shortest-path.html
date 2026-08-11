@@ -1,48 +1,89 @@
-<div class="container mt-4 shortest-path-page">
+<section class="crud-page">
+  <div class="crud-shell">
 
-  <h2>Shortest Reporting Path</h2>
+    <header class="crud-hero">
+      <p class="eyebrow">Reporting</p>
+      <div class="hero-row">
+        <div>
+          <h1>Shortest path</h1>
+          <p class="lede">Trace the reporting chain between two people in the organization.</p>
+        </div>
+      </div>
+    </header>
 
-  <div class="row mb-3 g-3">
-    <div class="col-md-4">
-      <label class="form-label">Employee</label>
-      <select class="form-select" [(ngModel)]="emp1">
-        <option value="">Select Employee</option>
-        <option *ngFor="let emp of employees()" [value]="emp.employeeId">
-          {{ emp.name }}
-        </option>
-      </select>
+    <section class="panel form-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Find reporting path</h2>
+          <p class="panel-sub">Select two employees to see how they connect through managers.</p>
+        </div>
+      </div>
+
+      <div class="form-grid cols-2">
+        <div class="field">
+          <span>From employee</span>
+          <app-select
+            [(ngModel)]="emp1"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Select employee"
+            [options]="employeeOptions()">
+          </app-select>
+        </div>
+
+        <div class="field">
+          <span>To employee</span>
+          <app-select
+            [(ngModel)]="emp2"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Select employee"
+            [options]="employeeOptions()">
+          </app-select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-primary" (click)="findPath()" [disabled]="loading()">
+          {{ loading() ? 'Searching…' : 'Find path' }}
+        </button>
+      </div>
+    </section>
+
+    <div *ngIf="loading()" class="state-banner loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Searching reporting path…
     </div>
 
-    <div class="col-md-4">
-      <label class="form-label">Employee</label>
-      <select class="form-select" [(ngModel)]="emp2">
-        <option value="">Select Employee</option>
-        <option *ngFor="let emp of employees()" [value]="emp.employeeId">
-          {{ emp.name }}
-        </option>
-      </select>
+    <div *ngIf="error()" class="state-banner error" role="alert">
+      {{ error() }}
     </div>
+
+    <section *ngIf="searched() && !loading() && !error()" class="panel table-panel">
+      <div class="panel-head">
+        <h2>Reporting chain</h2>
+        <span class="count-pill" *ngIf="path().length > 0">{{ path().length }} steps</span>
+      </div>
+
+      <p *ngIf="path().length === 0" class="empty-copy">
+        No reporting path found between the selected employees.
+      </p>
+
+      <div *ngIf="path().length > 0" class="path-chain">
+        <ng-container *ngFor="let name of path(); let last = last">
+          <div class="path-node">
+            <span class="avatar">{{ initials(name) }}</span>
+            <span class="person-meta">
+              <span class="person-name">{{ name }}</span>
+              <span class="person-id" *ngIf="designation(name) as role">{{ role }}</span>
+            </span>
+          </div>
+          <div *ngIf="!last" class="path-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
   </div>
-
-  <button class="btn btn-primary mb-4" (click)="findPath()" [disabled]="loading()">
-    {{ loading() ? 'Searching...' : 'Find Path' }}
-  </button>
-
-  <hr>
-
-  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-
-  <div *ngIf="searched() && !loading() && !error()" class="path-result">
-    <div *ngIf="path().length === 0" class="text-muted">
-      No reporting path found between the selected employees.
-    </div>
-
-    <div *ngIf="path().length > 0" class="path-chain">
-      <ng-container *ngFor="let name of path(); let last = last">
-        <div class="path-node">{{ name }}</div>
-        <div *ngIf="!last" class="path-arrow">↓</div>
-      </ng-container>
-    </div>
-  </div>
-
-</div>
+</section>

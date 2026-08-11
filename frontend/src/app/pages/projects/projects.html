@@ -1,112 +1,107 @@
-<div class="container mt-4">
+<section class="crud-page">
+  <div class="crud-shell">
 
-    <h2>Projects</h2>
+    <header class="crud-hero">
+      <p class="eyebrow">Delivery</p>
+      <div class="hero-row">
+        <div>
+          <h1>Projects</h1>
+          <p class="lede">Track client work and the teams delivering it.</p>
+        </div>
+        <span class="count-pill">{{ projects().length }} projects</span>
+      </div>
+    </header>
 
-    <form [formGroup]="projectForm" (ngSubmit)="saveProject()">
+    <section class="panel form-panel">
+      <div class="panel-head">
+        <div>
+          <h2>{{ editMode ? 'Update project' : 'Add project' }}</h2>
+          <p class="panel-sub">{{ editMode ? 'Save changes to this project record.' : 'Create a project that employees can be assigned to.' }}</p>
+        </div>
+      </div>
 
-        <div class="row">
+      <form [formGroup]="projectForm" (ngSubmit)="saveProject()">
+        <div class="form-grid">
+          <label class="field">
+            <span>Project ID</span>
+            <input formControlName="projectId" placeholder="PRJ001" [attr.readonly]="editMode ? true : null">
+          </label>
 
-            <div class="col-md-3">
+          <label class="field">
+            <span>Project name</span>
+            <input formControlName="projectName" placeholder="Project title">
+          </label>
 
-                <input class="form-control" placeholder="Project Id" formControlName="projectId"
-                    [attr.readonly]="editMode ? true : null">
+          <label class="field">
+            <span>Client name</span>
+            <input formControlName="clientName" placeholder="Client or account">
+          </label>
 
-            </div>
-
-            <div class="col-md-3">
-
-                <input class="form-control" placeholder="Project Name" formControlName="projectName">
-
-            </div>
-
-            <div class="col-md-3">
-
-                <input class="form-control" placeholder="Client Name" formControlName="clientName">
-
-            </div>
-
-            <div class="col-md-3">
-
-                <input class="form-control" placeholder="Description" formControlName="description">
-
-            </div>
-
+          <label class="field">
+            <span>Description</span>
+            <input formControlName="description" placeholder="What this project covers">
+          </label>
         </div>
 
-        <br>
-
-        <button type="submit" class="btn btn-primary" [disabled]="projectForm.invalid">
-
-            {{ editMode ? 'Update' : 'Save' }}
-
-        </button>
-
-        <button *ngIf="editMode" type="button" class="btn btn-secondary ms-2" (click)="resetForm()">
-
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="projectForm.invalid">
+            {{ editMode ? 'Update project' : 'Save project' }}
+          </button>
+          <button *ngIf="editMode" type="button" class="btn-ghost" (click)="resetForm()">
             Cancel
+          </button>
+        </div>
+      </form>
+    </section>
 
-        </button>
+    <section class="panel table-panel">
+      <div class="panel-head">
+        <h2>All projects</h2>
+      </div>
 
-    </form>
-
-    <hr>
-
-    <table class="table table-bordered table-striped">
-
-        <thead>
-
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
             <tr>
-
-                <th>ID</th>
-
-                <th>Name</th>
-
-                <th>Client</th>
-
-                <th>Description</th>
-
-                <th>Action</th>
-
+              <th>ID</th>
+              <th>Name</th>
+              <th>Client</th>
+              <th>Description</th>
+              <th>Action</th>
             </tr>
-
-        </thead>
-
-        <tbody>
-
-            <tr *ngIf="projects().length === 0">
-                <td colspan="5" class="empty-table-message">No record found of project</td>
+          </thead>
+          <tbody>
+            <tr *ngIf="projects().length === 0" class="empty-row">
+              <td colspan="5">No record found of project</td>
             </tr>
 
             <tr *ngFor="let project of projects()">
-
-                <td>{{project.projectId}}</td>
-
-                <td>{{project.projectName}}</td>
-
-                <td>{{project.clientName}}</td>
-
-                <td>{{project.description}}</td>
-
-                <td>
-
-                    <button type="button" class="btn btn-warning btn-sm me-2" (click)="editProject(project)">
-
-                        Edit
-
-                    </button>
-
-                    <button type="button" class="btn btn-danger btn-sm" (click)="deleteProject(project)">
-
-                        Delete
-
-                    </button>
-
-                </td>
-
+              <td><span class="id-chip">{{ project.projectId }}</span></td>
+              <td>
+                <span class="person-name">{{ project.projectName }}</span>
+              </td>
+              <td><span class="client-chip">{{ project.clientName }}</span></td>
+              <td class="muted">{{ project.description }}</td>
+              <td>
+                <div class="actions">
+                  <button type="button" class="icon-btn edit" title="Edit" (click)="editProject(project)">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M4 20h4l11.2-11.2a1.8 1.8 0 0 0 0-2.55L17.75 4.8a1.8 1.8 0 0 0-2.55 0L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                      <path d="M13.5 6.5 17.5 10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                  <button type="button" class="icon-btn delete" title="Delete" (click)="deleteProject(project)">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M5 7h14M10 11v6M14 11v6M8 7l1-3h6l1 3M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </td>
             </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-        </tbody>
-
-    </table>
-
-</div>
+  </div>
+</section>
