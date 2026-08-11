@@ -1,98 +1,102 @@
-<section class="crud-page">
-  <div class="crud-shell">
+<div class="container mt-4">
 
-    <header class="crud-hero">
-      <p class="eyebrow">Catalog</p>
-      <div class="hero-row">
-        <div>
-          <h1>Skills</h1>
-          <p class="lede">Define the capabilities you track across employees and projects.</p>
-        </div>
-        <span class="count-pill">{{ skills().length }} skills</span>
-      </div>
-    </header>
+    <h2>Skills</h2>
 
-    <section class="panel form-panel">
-      <div class="panel-head">
-        <div>
-          <h2>{{ editMode ? 'Update skill' : 'Add skill' }}</h2>
-          <p class="panel-sub">{{ editMode ? 'Save changes to this skill record.' : 'Create a skill that can be assigned to employees.' }}</p>
-        </div>
-      </div>
+    <form [formGroup]="skillForm" (ngSubmit)="saveSkill()">
 
-      <form [formGroup]="skillForm" (ngSubmit)="saveSkill()">
-        <div class="form-grid cols-3">
-          <label class="field">
-            <span>Skill ID</span>
-            <input formControlName="skillId" placeholder="SKL001" [attr.readonly]="editMode ? true : null">
-          </label>
+        <div class="row">
 
-          <label class="field">
-            <span>Skill name</span>
-            <input formControlName="skillName" placeholder="e.g. Angular">
-          </label>
+            <div class="col-md-4">
 
-          <label class="field">
-            <span>Description</span>
-            <input formControlName="description" placeholder="What this skill covers">
-          </label>
+                <input class="form-control" placeholder="Skill Id" formControlName="skillId"
+                    [attr.readonly]="editMode ? true : null">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <input class="form-control" placeholder="Skill Name" formControlName="skillName">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <input class="form-control" placeholder="Description" formControlName="description">
+
+            </div>
+
         </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn-primary" [disabled]="skillForm.invalid">
-            {{ editMode ? 'Update skill' : 'Save skill' }}
-          </button>
-          <button *ngIf="editMode" type="button" class="btn-ghost" (click)="resetForm()">
+        <br>
+
+        <button type="submit" class="btn btn-primary" [disabled]="skillForm.invalid">
+
+            {{ editMode ? 'Update' : 'Save' }}
+
+        </button>
+
+        <button *ngIf="editMode" type="button" class="btn btn-secondary ms-2" (click)="resetForm()">
+
             Cancel
-          </button>
-        </div>
-      </form>
-    </section>
 
-    <section class="panel table-panel">
-      <div class="panel-head">
-        <h2>All skills</h2>
-      </div>
+        </button>
 
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
+    </form>
+
+    <hr>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Action</th>
+
+                <th>ID</th>
+
+                <th>Name</th>
+
+                <th>Description</th>
+
+                <th>Action</th>
+
             </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="skills().length === 0" class="empty-row">
-              <td colspan="4">No record found of skill</td>
+
+        </thead>
+
+        <tbody>
+
+            <tr *ngIf="skills().length === 0">
+                <td colspan="4" class="empty-table-message">No record found of skill</td>
             </tr>
 
             <tr *ngFor="let skill of skills()">
-              <td><span class="id-chip">{{ skill.skillId }}</span></td>
-              <td><span class="skill-chip">{{ skill.skillName }}</span></td>
-              <td class="muted">{{ skill.description }}</td>
-              <td>
-                <div class="actions">
-                  <button type="button" class="icon-btn edit" title="Edit" (click)="editSkill(skill)">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M4 20h4l11.2-11.2a1.8 1.8 0 0 0 0-2.55L17.75 4.8a1.8 1.8 0 0 0-2.55 0L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                      <path d="M13.5 6.5 17.5 10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
-                  </button>
-                  <button type="button" class="icon-btn delete" title="Delete" (click)="deleteSkill(skill)">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M5 7h14M10 11v6M14 11v6M8 7l1-3h6l1 3M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
 
-  </div>
-</section>
+                <td>{{skill.skillId}}</td>
+
+                <td>{{skill.skillName}}</td>
+
+                <td>{{skill.description}}</td>
+
+                <td>
+
+                    <button type="button" class="btn btn-warning btn-sm me-2" (click)="editSkill(skill)">
+
+                        Edit
+
+                    </button>
+
+                    <button type="button" class="btn btn-danger btn-sm" (click)="deleteSkill(skill)">
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>

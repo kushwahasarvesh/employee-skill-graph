@@ -1,1 +1,23 @@
-/* Shared CRUD layout lives in styles.scss */
+.relationships-page {
+  .card {
+    border: 1px solid #dee2e6;
+  }
+
+  .card-title {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .form-label {
+    margin-bottom: 0.35rem;
+    font-weight: 500;
+  }
+
+  .form-select {
+    width: 100%;
+  }
+
+  .btn {
+    min-width: 140px;
+  }
+}

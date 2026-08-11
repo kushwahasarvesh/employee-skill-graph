@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
@@ -8,12 +8,11 @@ import { Employee } from '../../models/employee';
 import { Recommendation } from '../../models/recommendation';
 import { EmployeeService } from '../../services/employee';
 import { AlertService } from '../../services/alert';
-import { AppSelectComponent } from '../../shared/app-select/app-select';
 
 @Component({
   selector: 'app-recommendations',
   standalone: true,
-  imports: [CommonModule, FormsModule, AppSelectComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './recommendations.html',
   styleUrl: './recommendations.scss'
 })
@@ -23,9 +22,6 @@ export class RecommendationsComponent implements OnInit {
   private alert = inject(AlertService);
 
   employees = signal<Employee[]>([]);
-  employeeOptions = computed(() =>
-    this.employees().map((employee) => ({ value: employee.employeeId, label: employee.name }))
-  );
   employeeId = '';
   recommendations = signal<Recommendation[]>([]);
   searched = signal(false);
@@ -99,14 +95,5 @@ export class RecommendationsComponent implements OnInit {
 
   skillsMatch(rec: Recommendation): string {
     return (rec.matchedSkills ?? []).join(', ');
-  }
-
-  initials(name: string): string {
-    return (name ?? '')
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0].toUpperCase())
-      .join('');
   }
 }

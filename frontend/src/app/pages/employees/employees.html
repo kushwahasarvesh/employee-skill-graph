@@ -1,124 +1,117 @@
-<section class="crud-page">
-  <div class="crud-shell">
+<div class="container mt-4">
 
-    <header class="crud-hero">
-      <p class="eyebrow">Directory</p>
-      <div class="hero-row">
-        <div>
-          <h1>Employees</h1>
-          <p class="lede">Add, update, and manage people in the skill graph.</p>
-        </div>
-        <span class="count-pill">{{ employees().length }} people</span>
-      </div>
-    </header>
+    <h2>Employees</h2>
 
-    <section class="panel form-panel">
-      <div class="panel-head">
-        <div>
-          <h2>{{ editMode ? 'Update employee' : 'Add employee' }}</h2>
-          <p class="panel-sub">{{ editMode ? 'Save changes to this employee record.' : 'Fill in the details to create a new employee.' }}</p>
-        </div>
-      </div>
+    <form [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
 
-      <form [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
-        <div class="form-grid">
-          <label class="field">
-            <span>Employee ID</span>
-            <input formControlName="employeeId" placeholder="EMP001" [attr.readonly]="editMode ? true : null">
-          </label>
+        <div class="row">
 
-          <label class="field">
-            <span>Name</span>
-            <input formControlName="name" placeholder="Full name">
-          </label>
+            <div class="col-md-3">
 
-          <label class="field">
-            <span>Email</span>
-            <input
-              type="email"
-              formControlName="email"
-              placeholder="name@company.com"
-              [class.is-invalid]="email?.invalid && email?.touched">
-            <div class="field-error" *ngIf="email?.touched && email?.hasError('required')">
-              Email ID is required
+                <input class="form-control" placeholder="Employee Id" formControlName="employeeId">
+
             </div>
-            <div class="field-error" *ngIf="email?.touched && email?.hasError('pattern')">
-              Please enter a valid email ID
+
+            <div class="col-md-3">
+
+                <input class="form-control" placeholder="Name" formControlName="name">
+
             </div>
-          </label>
 
-          <label class="field">
-            <span>Designation</span>
-            <input formControlName="designation" placeholder="Role or title">
-          </label>
+            <div class="col-md-3">
+
+                <input class="form-control"
+                    type="email"
+                    placeholder="Email"
+                    formControlName="email"
+                    [class.is-invalid]="email?.invalid && email?.touched">
+                <div class="invalid-feedback d-block" *ngIf="email?.touched && email?.hasError('required')">
+                    Email ID is required
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="email?.touched && email?.hasError('pattern')">
+                    Please enter a valid email ID
+                </div>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input class="form-control" placeholder="Designation" formControlName="designation">
+
+            </div>
+
         </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn-primary">
-            {{ editMode ? 'Update employee' : 'Save employee' }}
-          </button>
-          <button *ngIf="editMode" type="button" class="btn-ghost" (click)="resetForm()">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </section>
+        <br>
 
-    <section class="panel table-panel">
-      <div class="panel-head">
-        <h2>All employees</h2>
-      </div>
+        <button class="btn btn-primary">
 
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
+            {{ editMode ? 'Update' : 'Save' }}
+
+        </button>
+
+    </form>
+
+    <hr>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+
             <tr>
-              <th>Employee</th>
-              <th>Email</th>
-              <th>Designation</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="employees().length === 0" class="empty-row">
-              <td colspan="4">No record found of employee</td>
+
+                <th>ID</th>
+
+                <th>Name</th>
+
+                <th>Email</th>
+
+                <th>Designation</th>
+
+                <th>Action</th>
+
             </tr>
 
-            <tr
-              class="clickable"
-              *ngFor="let employee of employees()"
-              (click)="openEmployeeDetails(employee)">
-              <td>
-                <div class="person-cell">
-                  <span class="avatar">{{ initials(employee.name) }}</span>
-                  <span class="person-meta">
-                    <span class="person-name">{{ employee.name }}</span>
-                    <span class="person-id">{{ employee.employeeId }}</span>
-                  </span>
-                </div>
-              </td>
-              <td>{{ employee.email }}</td>
-              <td>{{ employee.designation }}</td>
-              <td (click)="$event.stopPropagation()">
-                <div class="actions">
-                  <button type="button" class="icon-btn edit" title="Edit" (click)="editEmployee(employee)">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M4 20h4l11.2-11.2a1.8 1.8 0 0 0 0-2.55L17.75 4.8a1.8 1.8 0 0 0-2.55 0L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                      <path d="M13.5 6.5 17.5 10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
-                  </button>
-                  <button type="button" class="icon-btn delete" title="Delete" (click)="deleteEmployee(employee)">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M5 7h14M10 11v6M14 11v6M8 7l1-3h6l1 3M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        </thead>
 
-  </div>
-</section>
+        <tbody>
+
+            <tr *ngIf="employees().length === 0">
+                <td colspan="5" class="empty-table-message">No record found of employee</td>
+            </tr>
+
+            <tr class="employee-row"
+                *ngFor="let employee of employees()"
+                (click)="openEmployeeDetails(employee)">
+
+                <td>{{employee.employeeId}}</td>
+
+                <td>{{employee.name}}</td>
+
+                <td>{{employee.email}}</td>
+
+                <td>{{employee.designation}}</td>
+
+                <td (click)="$event.stopPropagation()">
+
+                    <button class="btn btn-warning btn-sm me-2" (click)="editEmployee(employee)">
+
+                        Edit
+
+                    </button>
+
+                    <button class="btn btn-danger btn-sm" (click)="deleteEmployee(employee)">
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>

@@ -1,102 +1,73 @@
-<section class="crud-page">
-  <div class="crud-shell">
+<div class="container mt-4">
 
-    <header class="crud-hero">
-      <p class="eyebrow">Profile</p>
-      <div class="hero-row">
-        <div>
-          <h1>Employee details</h1>
-          <p class="lede">Skills and projects linked to this person.</p>
-        </div>
-        <a routerLink="/employees" class="btn-ghost">Back to employees</a>
-      </div>
-    </header>
-
-    <div *ngIf="loading()" class="state-banner loading" role="status">
-      Loading employee details…
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="mb-0">Employee Details</h2>
+        <a routerLink="/employees" class="btn btn-secondary btn-sm">Back to Employees</a>
     </div>
 
-    <div *ngIf="error()" class="state-banner error" role="alert">
-      {{ error() }}
-    </div>
+    <div *ngIf="loading()" class="alert alert-info">Loading employee details...</div>
+
+    <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
 
     <ng-container *ngIf="!loading() && !error() && employee() as emp">
 
-      <section class="panel form-panel">
-        <div class="profile-card">
-          <span class="avatar profile-avatar">{{ initials(emp.name) }}</span>
-          <div class="profile-meta">
-            <h2>{{ emp.name }}</h2>
-            <div class="profile-facts">
-              <span>{{ emp.employeeId }}</span>
-              <span>{{ emp.email }}</span>
-              <span>{{ emp.designation }}</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel table-panel">
-        <div class="panel-head">
-          <h2>Assigned skills</h2>
-          <span class="count-pill">{{ skills().length }}</span>
+        <div class="mb-4">
+            <h4>{{ emp.name }}</h4>
+            <p class="mb-1"><strong>ID:</strong> {{ emp.employeeId }}</p>
+            <p class="mb-1"><strong>Email:</strong> {{ emp.email }}</p>
+            <p class="mb-0"><strong>Designation:</strong> {{ emp.designation }}</p>
         </div>
 
-        <div class="table-wrap">
-          <table class="data-table">
+        <hr>
+
+        <h4>Assigned Skills</h4>
+
+        <table class="table table-bordered table-striped">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
             </thead>
             <tbody>
-              <tr *ngIf="skills().length === 0" class="empty-row">
-                <td colspan="3">No record found of skill</td>
-              </tr>
-              <tr *ngFor="let skill of skills()">
-                <td><span class="id-chip">{{ skill.skillId }}</span></td>
-                <td><span class="skill-chip">{{ skill.skillName }}</span></td>
-                <td class="muted">{{ skill.description }}</td>
-              </tr>
+                <tr *ngIf="skills().length === 0">
+                    <td colspan="3" class="empty-table-message">No record found of skill</td>
+                </tr>
+                <tr *ngFor="let skill of skills()">
+                    <td>{{ skill.skillId }}</td>
+                    <td>{{ skill.skillName }}</td>
+                    <td>{{ skill.description }}</td>
+                </tr>
             </tbody>
-          </table>
-        </div>
-      </section>
+        </table>
 
-      <section class="panel table-panel">
-        <div class="panel-head">
-          <h2>Assigned projects</h2>
-          <span class="count-pill">{{ projects().length }}</span>
-        </div>
+        <hr>
 
-        <div class="table-wrap">
-          <table class="data-table">
+        <h4>Assigned Projects</h4>
+
+        <table class="table table-bordered table-striped">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Client</th>
-                <th>Description</th>
-              </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Client</th>
+                    <th>Description</th>
+                </tr>
             </thead>
             <tbody>
-              <tr *ngIf="projects().length === 0" class="empty-row">
-                <td colspan="4">No record found of project</td>
-              </tr>
-              <tr *ngFor="let project of projects()">
-                <td><span class="id-chip">{{ project.projectId }}</span></td>
-                <td><span class="person-name">{{ project.projectName }}</span></td>
-                <td><span class="client-chip">{{ project.clientName }}</span></td>
-                <td class="muted">{{ project.description }}</td>
-              </tr>
+                <tr *ngIf="projects().length === 0">
+                    <td colspan="4" class="empty-table-message">No record found of project</td>
+                </tr>
+                <tr *ngFor="let project of projects()">
+                    <td>{{ project.projectId }}</td>
+                    <td>{{ project.projectName }}</td>
+                    <td>{{ project.clientName }}</td>
+                    <td>{{ project.description }}</td>
+                </tr>
             </tbody>
-          </table>
-        </div>
-      </section>
+        </table>
 
     </ng-container>
 
-  </div>
-</section>
+</div>

@@ -105,7 +105,6 @@ export class ProjectsComponent implements OnInit {
   editProject(project: Project) {
     this.editMode = true;
     this.projectForm.patchValue(project);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   deleteProject(project: Project) {

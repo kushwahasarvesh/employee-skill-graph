@@ -103,7 +103,6 @@ export class SkillsComponent implements OnInit {
   editSkill(skill: Skill) {
     this.editMode = true;
     this.skillForm.patchValue(skill);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   deleteSkill(skill: Skill) {

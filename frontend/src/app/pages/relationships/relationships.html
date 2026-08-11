@@ -1,124 +1,93 @@
-<section class="crud-page">
-  <div class="crud-shell">
+<div class="container mt-4 relationships-page">
 
-    <header class="crud-hero">
-      <p class="eyebrow">Connections</p>
-      <div class="hero-row">
-        <div>
-          <h1>Relationships</h1>
-          <p class="lede">Link people to skills, projects, and managers in the skill graph.</p>
+  <h2>Relationships</h2>
+
+  <div class="row g-3">
+
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h4 class="card-title">Assign Skill</h4>
+
+          <label class="form-label">Employee</label>
+          <select class="form-select mb-3" [(ngModel)]="skillEmployeeId">
+            <option value="">Select Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
+
+          <label class="form-label">Skill</label>
+          <select class="form-select mb-3" [(ngModel)]="skillId">
+            <option value="">Select Skill</option>
+            <option *ngFor="let skill of skills" [value]="skill.skillId">
+              {{ skill.skillName }}
+            </option>
+          </select>
+
+          <button class="btn btn-primary mt-auto align-self-start" (click)="assignSkill()">
+            Assign Skill
+          </button>
         </div>
       </div>
-    </header>
+    </div>
 
-    <div class="assign-grid">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h4 class="card-title">Assign Project</h4>
 
-      <section class="panel assign-card">
-        <div class="panel-head">
-          <div>
-            <h2>Assign skill</h2>
-            <p class="panel-sub">Attach a capability to an employee.</p>
-          </div>
-        </div>
+          <label class="form-label">Employee</label>
+          <select class="form-select mb-3" [(ngModel)]="projectEmployeeId">
+            <option value="">Select Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
 
-        <div class="field">
-          <span>Employee</span>
-          <app-select
-            [(ngModel)]="skillEmployeeId"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Select employee"
-            [options]="employeeOptions()">
-          </app-select>
-        </div>
+          <label class="form-label">Project</label>
+          <select class="form-select mb-3" [(ngModel)]="projectId">
+            <option value="">Select Project</option>
+            <option *ngFor="let project of projects" [value]="project.projectId">
+              {{ project.projectName }}
+            </option>
+          </select>
 
-        <div class="field">
-          <span>Skill</span>
-          <app-select
-            [(ngModel)]="skillId"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Select skill"
-            [options]="skillOptions()">
-          </app-select>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn-primary" (click)="assignSkill()">
-            Assign skill
+          <button class="btn btn-success mt-auto align-self-start" (click)="assignProject()">
+            Assign Project
           </button>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <section class="panel assign-card blue">
-        <div class="panel-head">
-          <div>
-            <h2>Assign project</h2>
-            <p class="panel-sub">Put an employee on a client project.</p>
-          </div>
-        </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h4 class="card-title">Assign Manager</h4>
 
-        <div class="field">
-          <span>Employee</span>
-          <app-select
-            [(ngModel)]="projectEmployeeId"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Select employee"
-            [options]="employeeOptions()">
-          </app-select>
-        </div>
+          <label class="form-label">Employee</label>
+          <select class="form-select mb-3" [(ngModel)]="managerEmployeeId">
+            <option value="">Select Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
 
-        <div class="field">
-          <span>Project</span>
-          <app-select
-            [(ngModel)]="projectId"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Select project"
-            [options]="projectOptions()">
-          </app-select>
-        </div>
+          <label class="form-label">Manager</label>
+          <select class="form-select mb-3" [(ngModel)]="managerId">
+            <option value="">Select Manager</option>
+            <option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.name }}
+            </option>
+          </select>
 
-        <div class="form-actions">
-          <button type="button" class="btn-primary blue" (click)="assignProject()">
-            Assign project
+          <button class="btn btn-warning mt-auto align-self-start" (click)="assignManager()">
+            Assign Manager
           </button>
         </div>
-      </section>
-
-      <section class="panel assign-card coral">
-        <div class="panel-head">
-          <div>
-            <h2>Assign manager</h2>
-            <p class="panel-sub">Set the reporting line for an employee.</p>
-          </div>
-        </div>
-
-        <div class="field">
-          <span>Employee</span>
-          <app-select
-            [(ngModel)]="managerEmployeeId"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Select employee"
-            [options]="employeeOptions()">
-          </app-select>
-        </div>
-
-        <div class="field">
-          <span>Manager</span>
-          <app-select
-            [(ngModel)]="managerId"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Select manager"
-            [options]="employeeOptions()">
-          </app-select>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn-primary coral" (click)="assignManager()">
-            Assign manager
-          </button>
-        </div>
-      </section>
-
+      </div>
     </div>
 
   </div>
-</section>
+
+</div>

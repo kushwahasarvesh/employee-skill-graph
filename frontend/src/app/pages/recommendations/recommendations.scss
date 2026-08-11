@@ -1,1 +1,14 @@
-/* Shared CRUD layout lives in styles.scss */
+.recommendations-page {
+  .form-label {
+    margin-bottom: 0.35rem;
+    font-weight: 500;
+  }
+
+  .form-select {
+    width: 100%;
+  }
+
+  .btn {
+    min-width: 180px;
+  }
+}

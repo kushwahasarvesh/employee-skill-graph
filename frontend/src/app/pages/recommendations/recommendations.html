@@ -1,93 +1,43 @@
-<section class="crud-page">
-  <div class="crud-shell">
+<div class="container mt-4 recommendations-page">
 
-    <header class="crud-hero">
-      <p class="eyebrow">Discovery</p>
-      <div class="hero-row">
-        <div>
-          <h1>Recommendations</h1>
-          <p class="lede">Find people with overlapping skills for a selected employee.</p>
-        </div>
-      </div>
-    </header>
+  <h2>Recommendations</h2>
 
-    <section class="panel form-panel">
-      <div class="panel-head">
-        <div>
-          <h2>Find similar employees</h2>
-          <p class="panel-sub">Choose a person to see who shares their skills.</p>
-        </div>
-      </div>
-
-      <div class="form-grid cols-2">
-        <div class="field">
-          <span>Employee</span>
-          <app-select
-            [(ngModel)]="employeeId"
-            [ngModelOptions]="{standalone: true}"
-            placeholder="Select employee"
-            [options]="employeeOptions()">
-          </app-select>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="button" class="btn-primary" (click)="findSimilar()" [disabled]="loading()">
-          {{ loading() ? 'Searching…' : 'Find similar employees' }}
-        </button>
-      </div>
-    </section>
-
-    <div *ngIf="loading()" class="state-banner loading" role="status">
-      <span class="spinner" aria-hidden="true"></span>
-      Searching for similar employees…
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label class="form-label">Employee</label>
+      <select class="form-select" [(ngModel)]="employeeId">
+        <option value="">Select Employee</option>
+        <option *ngFor="let emp of employees()" [value]="emp.employeeId">
+          {{ emp.name }}
+        </option>
+      </select>
     </div>
-
-    <div *ngIf="error()" class="state-banner error" role="alert">
-      {{ error() }}
-    </div>
-
-    <section *ngIf="searched() && !loading() && !error()" class="panel table-panel">
-      <div class="panel-head">
-        <h2>Matching people</h2>
-        <span class="count-pill">{{ recommendations().length }} matches</span>
-      </div>
-
-      <div class="table-wrap">
-        <table class="data-table compact">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Skills match</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="recommendations().length === 0" class="empty-row">
-              <td colspan="2">No record found of employee</td>
-            </tr>
-            <tr *ngFor="let rec of recommendations()">
-              <td>
-                <div class="person-cell">
-                  <span class="avatar">{{ initials(rec.name) }}</span>
-                  <span class="person-meta">
-                    <span class="person-name">{{ rec.name }}</span>
-                    <span class="person-id">{{ rec.employeeId }}</span>
-                  </span>
-                </div>
-              </td>
-              <td>
-                <div class="chip-wrap" *ngIf="rec.matchedSkills.length; else noSkills">
-                  <span class="skill-chip" *ngFor="let skill of rec.matchedSkills">{{ skill }}</span>
-                </div>
-                <ng-template #noSkills>
-                  <span class="muted">No overlapping skills</span>
-                </ng-template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
   </div>
-</section>
+
+  <button class="btn btn-primary mb-4" (click)="findSimilar()" [disabled]="loading()">
+    {{ loading() ? 'Searching...' : 'Find Similar Employees' }}
+  </button>
+
+  <hr>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+
+  <table *ngIf="searched() && !loading() && !error()" class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Skills Match</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="recommendations().length === 0">
+        <td colspan="2" class="empty-table-message">No record found of employee</td>
+      </tr>
+      <tr *ngFor="let rec of recommendations()">
+        <td>{{ rec.name }}</td>
+        <td>{{ skillsMatch(rec) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
